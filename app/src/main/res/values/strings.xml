@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Shadman_Hossain_MyRuns1</string>
+    <string name="Profile">Profile</string>
+    <string name="name">Name</string>
+    <string name="insert_user_name_here">Insert User Name Here</string>
+    <string name="email">Email</string>
+    <string name="insert_email_here">Insert Email Here</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="insert_phone_number_here">Insert Phone Number Here</string>
+    <string name="Male">Male</string>
+    <string name="Female">Female</string>
+    <string name="Other">Other</string>
+    <string name="major">Major</string>
+    <string name="insert_major_here">Insert Major Here</string>
+    <string name="profile_photo">Profile Photo</string>
+    <string name="change">Change</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+</resources>
