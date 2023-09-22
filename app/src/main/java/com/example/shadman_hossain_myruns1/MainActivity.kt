@@ -17,7 +17,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userGender:RadioGroup
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
-//    private lateinit var selectedGenderButton:RadioButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,10 +27,6 @@ class MainActivity : AppCompatActivity() {
         userMajor = findViewById(R.id.userMajor)
         userGender = findViewById(R.id.genderButtonRadioGroup)
         loadProfile()
-        userGender.setOnCheckedChangeListener { group, checkedId ->
-//            selectedGenderButton = findViewById(checkedId)
-//            selectedGenderButton.isActivated
-        }
         saveButton = findViewById(R.id.saveButton)
         saveButton.setOnClickListener {
             saveProfile()
@@ -42,21 +37,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun saveProfile(){
+    private fun saveProfile(){
         val savedProfiles = getSharedPreferences("Profiles", MODE_PRIVATE)
         val editor = savedProfiles.edit()
-        editor.apply(){
+        editor.apply {
             putString("UserName", userName.text.toString())
             putString("UserEmail", userEmail.text.toString())
             putString("UserPhoneNumber", userPhoneNumber.text.toString())
             putString("UserMajor", userMajor.text.toString())
-//            putBoolean("UserGender", selectedGenderButton.isActivated)
+            putInt("UserGender", userGender.checkedRadioButtonId)
             apply()
         }
         Toast.makeText(this, "Profile Saved", Toast.LENGTH_SHORT).show()
         }
 
-    fun loadProfile(){
+    private fun loadProfile(){
         val savedProfiles = getSharedPreferences("Profiles", MODE_PRIVATE)
         val editor = savedProfiles.edit()
         if (savedProfiles != null) {
@@ -64,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             userEmail.setText(savedProfiles.getString("UserEmail", null))
             userPhoneNumber.setText(savedProfiles.getString("UserPhoneNumber", null))
             userMajor.setText(savedProfiles.getString("UserMajor", null))
-//            selectedGenderButton.setChecked(savedProfiles.getBoolean("UserGender", false))
+            userGender.check(savedProfiles.getInt("UserGender", -1))
         }
     }
     }
