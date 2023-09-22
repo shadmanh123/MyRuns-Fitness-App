@@ -1,13 +1,8 @@
 package com.example.shadman_hossain_myruns1
 
-import android.bluetooth.BluetoothClass.Device.Major
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract.CommonDataKinds.Email
 import android.widget.*
-import java.util.jar.Attributes.Name
 
 class MainActivity : AppCompatActivity() {
     private lateinit var userName:EditText
@@ -21,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.profile)
         userName = findViewById(R.id.userName)
         userEmail = findViewById(R.id.userEmail)
         userPhoneNumber = findViewById(R.id.userPhoneNumber)
