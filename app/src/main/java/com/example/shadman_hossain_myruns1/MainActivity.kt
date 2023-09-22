@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userName:EditText
     private lateinit var userEmail: EditText
     private lateinit var userPhoneNumber:EditText
+    private lateinit var userClass: EditText
     private lateinit var userMajor:EditText
     private lateinit var userGender:RadioGroup
     private lateinit var saveButton: Button
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         userName = findViewById(R.id.userName)
         userEmail = findViewById(R.id.userEmail)
         userPhoneNumber = findViewById(R.id.userPhoneNumber)
+        userClass = findViewById(R.id.userClass)
         userMajor = findViewById(R.id.userMajor)
         userGender = findViewById(R.id.genderButtonRadioGroup)
         loadProfile()
@@ -44,6 +46,7 @@ class MainActivity : AppCompatActivity() {
             putString("UserName", userName.text.toString())
             putString("UserEmail", userEmail.text.toString())
             putString("UserPhoneNumber", userPhoneNumber.text.toString())
+            putString("UserClass", userClass.text.toString())
             putString("UserMajor", userMajor.text.toString())
             putInt("UserGender", userGender.checkedRadioButtonId)
             apply()
@@ -57,6 +60,7 @@ class MainActivity : AppCompatActivity() {
             userName.setText(savedProfiles.getString("UserName", null))
             userEmail.setText(savedProfiles.getString("UserEmail", null))
             userPhoneNumber.setText(savedProfiles.getString("UserPhoneNumber", null))
+            userClass.setText(savedProfiles.getString("UserClass",null))
             userMajor.setText(savedProfiles.getString("UserMajor", null))
             userGender.check(savedProfiles.getInt("UserGender", -1))
         }
