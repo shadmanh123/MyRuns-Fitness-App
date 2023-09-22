@@ -53,7 +53,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadProfile(){
         val savedProfiles = getSharedPreferences("Profiles", MODE_PRIVATE)
-        val editor = savedProfiles.edit()
         if (savedProfiles != null) {
             userName.setText(savedProfiles.getString("UserName", null))
             userEmail.setText(savedProfiles.getString("UserEmail", null))
