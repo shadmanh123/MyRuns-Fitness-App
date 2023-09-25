@@ -47,12 +47,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.profile)
         Utilities.checkForPermission(this)
-
         profilePhoto = findViewById(R.id.ProfilePhoto)
-
         photoButton = findViewById(R.id.changeProfilePictureButton)
-
-
         userName = findViewById(R.id.userName)
         userEmail = findViewById(R.id.userEmail)
         userPhoneNumber = findViewById(R.id.userPhoneNumber)
@@ -98,7 +94,6 @@ class MainActivity : AppCompatActivity() {
     }
     private fun setProfilePhoto() {
         tempImageFile = File(getExternalFilesDir(null), tempImgFileName)
-//        savedImageFile = File(getExternalFilesDir(null),savedImageFileName)
         if (tempImageFile.length() != 0.toLong()) {
             tempImageUri = FileProvider.getUriForFile(this, "com.MyRuns", tempImageFile)
             bitmap = Utilities.getBitMap(this, tempImageUri)
