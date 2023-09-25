@@ -13,10 +13,10 @@
     <string name="major">Major</string>
     <string name="insert_major_here">Insert Major Here</string>
     <string name="profile_photo">Profile Photo</string>
-    <string name="change">Change</string>
+    <string name="take_picture">Take Picture</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="gender">Gender</string>
     <string name="class_title">Class</string>
-    <string name="insert_class_here">Insert Class Here</string>
+    <string name="insert_class_here">Insert Class Year Here</string>
 </resources>

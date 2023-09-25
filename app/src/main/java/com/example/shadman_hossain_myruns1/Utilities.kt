@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
+import android.webkit.PermissionRequest
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
@@ -21,6 +22,7 @@ object Utilities {
             ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), 0)
         }
     }
+
     fun getBitMap(context: Context, imgUri: Uri): Bitmap{
         val inputStream = context.contentResolver.openInputStream(imgUri)
         var bitmap = BitmapFactory.decodeStream(inputStream)
