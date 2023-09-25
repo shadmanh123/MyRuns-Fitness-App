@@ -1,26 +1,22 @@
 package com.example.shadman_hossain_myruns1
 
 import android.app.Activity
-import android.app.Instrumentation.ActivityResult
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.net.URI
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
@@ -67,9 +63,9 @@ class MainActivity : AppCompatActivity() {
         loadProfile()
         setProfilePhoto()
         viewProfilePhoto = ViewModelProvider(this).get(MyViewModel::class.java)
-        viewProfilePhoto.photoOfUser.observe(this, Observer{it ->
+        viewProfilePhoto.photoOfUser.observe(this) {
             profilePhoto.setImageBitmap(it)
-        })
+        }
         takePhotoIntent = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
         { result: androidx.activity.result.ActivityResult ->
             if(result.resultCode == Activity.RESULT_OK){
@@ -82,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             takePhoto(intent)
         }
         saveButton.setOnClickListener {
-            if(allValuesEntered==false){
+            if(!allValuesEntered){
                 checkValidInputs()
             }
             else{
@@ -183,7 +179,7 @@ class MainActivity : AppCompatActivity() {
             userMajor.setText(savedProfiles.getString("UserMajor", null))
             userGender.check(savedProfiles.getInt("UserGender", -1))
         }
-        if(firstTimeLoad == true){
+        if(firstTimeLoad){
             bitmap = Utilities.getBitMap(this, Uri.parse(savedImageUriString))
             profilePhoto.setImageBitmap(bitmap)
         }
