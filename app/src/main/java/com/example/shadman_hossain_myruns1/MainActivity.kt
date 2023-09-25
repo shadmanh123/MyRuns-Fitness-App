@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewProfilePhoto: MyViewModel
     private var intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
     private var allValuesEntered = false
+    private var firstTimeLoad = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.profile)
@@ -131,6 +132,9 @@ class MainActivity : AppCompatActivity() {
         else if(userMajor.text.toString().isEmpty()){
             Toast.makeText(this,"Input a major", Toast.LENGTH_SHORT).show()
         }
+        else if(profilePhoto.drawable == null){
+            Toast.makeText(this,"Take a photo", Toast.LENGTH_SHORT).show()
+        }
         else{
             allValuesEntered = true
         }
@@ -146,17 +150,10 @@ class MainActivity : AppCompatActivity() {
                 savedImageFile.toPath(),
                 StandardCopyOption.REPLACE_EXISTING
             )
-//            val inputStream = FileInputStream(tempImageFile)
-//            val outputStream = FileOutputStream(savedImageFile)
-//            val buffer = ByteArray(1024)
-//            var length:Int
-//            while(inputStream.read(buffer).also { length = it } > 0){
-//                outputStream.write(buffer, 0, length)
-//            }
-//            outputStream.close()
-//            inputStream.close()
+
         }
         savedImageUri = FileProvider.getUriForFile(this, "com.MyRuns", savedImageFile)
+        firstTimeLoad = true
         editor.apply {
             putString("UserName", userName.text.toString())
             putString("UserEmail", userEmail.text.toString())
@@ -165,6 +162,7 @@ class MainActivity : AppCompatActivity() {
             putString("UserMajor", userMajor.text.toString())
             putInt("UserGender", userGender.checkedRadioButtonId)
             putString("ProfilePhoto", savedImageUri.toString())
+            putBoolean("FirstTimeLoad", firstTimeLoad)
             apply()
         }
         tempImageFile.delete()
@@ -176,6 +174,7 @@ class MainActivity : AppCompatActivity() {
         val savedProfiles = getSharedPreferences("Profiles", MODE_PRIVATE)
         val savedImageUriString:String? = savedProfiles.getString("ProfilePhoto", null)
         val userClassInt:Int = savedProfiles.getInt("UserClass",-1)
+        val firstTimeLoad = savedProfiles.getBoolean("FirstTimeLoad", false)
         if (savedProfiles != null) {
             userName.setText(savedProfiles.getString("UserName", null))
             userEmail.setText(savedProfiles.getString("UserEmail", null))
@@ -184,7 +183,7 @@ class MainActivity : AppCompatActivity() {
             userMajor.setText(savedProfiles.getString("UserMajor", null))
             userGender.check(savedProfiles.getInt("UserGender", -1))
         }
-        if(savedImageUriString != null){
+        if(firstTimeLoad == true){
             bitmap = Utilities.getBitMap(this, Uri.parse(savedImageUriString))
             profilePhoto.setImageBitmap(bitmap)
         }
