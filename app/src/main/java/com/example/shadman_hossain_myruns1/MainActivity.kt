@@ -17,7 +17,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.net.URI
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 class MainActivity : AppCompatActivity() {
     private lateinit var userName:EditText
@@ -31,21 +36,35 @@ class MainActivity : AppCompatActivity() {
     private lateinit var profilePhoto: ImageView
     private lateinit var photoButton: Button
     private lateinit var tempImageFile: File
+    private lateinit var savedImageFile:File
     private lateinit var tempImageUri:Uri
+    private lateinit var savedImageUri: Uri
     private lateinit var bitmap: Bitmap
     private val tempImgFileName = "profile_photos.jpg"
+    private val savedImageFileName = "saved_profile_photo.jpg"
     private lateinit var takePhotoIntent: ActivityResultLauncher<Intent>
     private lateinit var viewProfilePhoto: MyViewModel
     private var intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
     private var allValuesEntered = false
-    private var newProfilePhotoCaptured = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.profile)
         Utilities.checkForPermission(this)
+
         profilePhoto = findViewById(R.id.ProfilePhoto)
-        setProfilePhoto()
+
         photoButton = findViewById(R.id.changeProfilePictureButton)
+
+
+        userName = findViewById(R.id.userName)
+        userEmail = findViewById(R.id.userEmail)
+        userPhoneNumber = findViewById(R.id.userPhoneNumber)
+        userClass = findViewById(R.id.userClass)
+        userMajor = findViewById(R.id.userMajor)
+        userGender = findViewById(R.id.genderButtonRadioGroup)
+        saveButton = findViewById(R.id.saveButton)
+        loadProfile()
+        setProfilePhoto()
         viewProfilePhoto = ViewModelProvider(this).get(MyViewModel::class.java)
         viewProfilePhoto.photoOfUser.observe(this, Observer{it ->
             profilePhoto.setImageBitmap(it)
@@ -61,14 +80,6 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri)
             takePhoto(intent)
         }
-        userName = findViewById(R.id.userName)
-        userEmail = findViewById(R.id.userEmail)
-        userPhoneNumber = findViewById(R.id.userPhoneNumber)
-        userClass = findViewById(R.id.userClass)
-        userMajor = findViewById(R.id.userMajor)
-        userGender = findViewById(R.id.genderButtonRadioGroup)
-        loadProfile()
-        saveButton = findViewById(R.id.saveButton)
         saveButton.setOnClickListener {
             if(allValuesEntered==false){
                 checkValidInputs()
@@ -79,17 +90,18 @@ class MainActivity : AppCompatActivity() {
         }
         cancelButton = findViewById(R.id.cancelButton)
         cancelButton.setOnClickListener {
+            tempImageFile.delete()
             finish()
         }
     }
 
     private fun takePhoto(intent: Intent){
         takePhotoIntent.launch(intent)
-        newProfilePhotoCaptured = true
         setProfilePhoto()
     }
     private fun setProfilePhoto() {
         tempImageFile = File(getExternalFilesDir(null), tempImgFileName)
+//        savedImageFile = File(getExternalFilesDir(null),savedImageFileName)
         if (tempImageFile.length() != 0.toLong()) {
             tempImageUri = FileProvider.getUriForFile(this, "com.MyRuns", tempImageFile)
             bitmap = Utilities.getBitMap(this, tempImageUri)
@@ -126,6 +138,25 @@ class MainActivity : AppCompatActivity() {
     private fun saveProfile(){
         val savedProfiles = getSharedPreferences("Profiles", MODE_PRIVATE)
         val editor = savedProfiles.edit()
+        savedImageFile = File(getExternalFilesDir(null),savedImageFileName)
+
+        if(tempImageFile.exists()) {
+            Files.copy(
+                tempImageFile.inputStream(),
+                savedImageFile.toPath(),
+                StandardCopyOption.REPLACE_EXISTING
+            )
+//            val inputStream = FileInputStream(tempImageFile)
+//            val outputStream = FileOutputStream(savedImageFile)
+//            val buffer = ByteArray(1024)
+//            var length:Int
+//            while(inputStream.read(buffer).also { length = it } > 0){
+//                outputStream.write(buffer, 0, length)
+//            }
+//            outputStream.close()
+//            inputStream.close()
+        }
+        savedImageUri = FileProvider.getUriForFile(this, "com.MyRuns", savedImageFile)
         editor.apply {
             putString("UserName", userName.text.toString())
             putString("UserEmail", userEmail.text.toString())
@@ -133,18 +164,17 @@ class MainActivity : AppCompatActivity() {
             putInt("UserClass", userClass.text.toString().toInt())
             putString("UserMajor", userMajor.text.toString())
             putInt("UserGender", userGender.checkedRadioButtonId)
-            if(newProfilePhotoCaptured == true){
-                editor.putString("ProfilePhoto", tempImageUri.toString())
-            }
+            putString("ProfilePhoto", savedImageUri.toString())
             apply()
         }
+        tempImageFile.delete()
 
         Toast.makeText(this, "Profile Saved", Toast.LENGTH_SHORT).show()
     }
 
     private fun loadProfile(){
         val savedProfiles = getSharedPreferences("Profiles", MODE_PRIVATE)
-        val tempImageUriString:String? = savedProfiles.getString("Profile Photo", null)
+        val savedImageUriString:String? = savedProfiles.getString("ProfilePhoto", null)
         val userClassInt:Int = savedProfiles.getInt("UserClass",-1)
         if (savedProfiles != null) {
             userName.setText(savedProfiles.getString("UserName", null))
@@ -154,10 +184,15 @@ class MainActivity : AppCompatActivity() {
             userMajor.setText(savedProfiles.getString("UserMajor", null))
             userGender.check(savedProfiles.getInt("UserGender", -1))
         }
-        if(tempImageUriString != null){
-            bitmap = Utilities.getBitMap(this, Uri.parse(tempImageUriString))
+        if(savedImageUriString != null){
+            bitmap = Utilities.getBitMap(this, Uri.parse(savedImageUriString))
             profilePhoto.setImageBitmap(bitmap)
         }
+    }
+
+    override fun onStop() {
+        tempImageFile.delete()
+        super.onStop()
     }
 
 }
