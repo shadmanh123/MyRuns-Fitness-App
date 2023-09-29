@@ -28,6 +28,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity android:name=".Profile"/>
         <provider
             android:authorities="com.MyRuns"
             android:name="androidx.core.content.FileProvider"
