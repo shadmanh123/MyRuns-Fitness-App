@@ -10,10 +10,10 @@
         android:id="@+id/profileTitle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/black"
+        android:background="@color/Light_Cyan"
         android:gravity="center"
         android:text="@string/Profile"
-        android:textColor="@color/blue"
+        android:textColor="@color/Burnt_Sienna"
         android:textSize="25sp"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,7 +28,7 @@
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/black"
+            android:background="@color/Light_Cyan"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/profileTitle">
@@ -40,7 +40,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/profile_photo"
-                android:textColor="@color/blue" />
+                android:textColor="@color/Burnt_Sienna" />
 
 
             <ImageView
@@ -55,7 +55,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/take_picture" />
+                android:text="@string/take_picture"
+                android:backgroundTint="@color/Powder_Blue"/>
 
             <TextView
                 android:id="@+id/userNameTag"
@@ -64,7 +65,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/name"
-                android:textColor="@color/blue" />
+                android:textColor="@color/Burnt_Sienna" />
 
             <EditText
                 android:id="@+id/userName"
@@ -73,11 +74,11 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:background="@color/white"
+                android:background="@color/Light_Cyan"
                 android:hint="@string/insert_user_name_here"
                 android:inputType="textPersonName"
-                android:textColor="@color/blue"
-                android:textColorHint="@color/blue"
+                android:textColor="@color/Gunmetal"
+                android:textColorHint="@color/YlnMn_Blue"
                 android:textSize="12sp" />
 
             <TextView
@@ -87,7 +88,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/email"
-                android:textColor="@color/blue" />
+                android:textColor="@color/Burnt_Sienna" />
 
             <EditText
                 android:id="@+id/userEmail"
@@ -96,11 +97,11 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:background="@color/white"
+                android:background="@color/Light_Cyan"
                 android:hint="@string/insert_email_here"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/blue"
-                android:textColorHint="@color/blue"
+                android:textColor="@color/Gunmetal"
+                android:textColorHint="@color/YlnMn_Blue"
                 android:textSize="12sp" />
 
             <TextView
@@ -110,7 +111,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/phone_number"
-                android:textColor="@color/blue" />
+                android:textColor="@color/Burnt_Sienna" />
 
             <EditText
                 android:id="@+id/userPhoneNumber"
@@ -119,11 +120,11 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:background="@color/white"
+                android:background="@color/Light_Cyan"
                 android:hint="@string/insert_phone_number_here"
                 android:inputType="phone"
-                android:textColor="@color/blue"
-                android:textColorHint="@color/blue"
+                android:textColor="@color/Gunmetal"
+                android:textColorHint="@color/YlnMn_Blue"
                 android:textSize="12sp" />
 
             <TextView
@@ -133,7 +134,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/gender"
-                android:textColor="@color/blue" />
+                android:textColor="@color/Burnt_Sienna" />
 
             <RadioGroup
                 android:id="@+id/genderButtonRadioGroup"
@@ -142,7 +143,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-
                 >
 
                 <RadioButton
@@ -150,21 +150,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="@string/Male"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/Gunmetal"
+                    android:buttonTint="@color/Burnt_Sienna"/>
 
                 <RadioButton
                     android:id="@+id/femaleGenderButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="@string/Female"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/Gunmetal"
+                    android:buttonTint="@color/Burnt_Sienna"/>
 
                 <RadioButton
                     android:id="@+id/otherGenderButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="@string/Other"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/Gunmetal"
+                    android:buttonTint="@color/Burnt_Sienna"/>
             </RadioGroup>
 
             <TextView
@@ -174,7 +177,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/class_title"
-                android:textColor="@color/blue" />
+                android:textColor="@color/Burnt_Sienna" />
 
             <EditText
                 android:id="@+id/userClass"
@@ -183,11 +186,11 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:background="@color/white"
+                android:background="@color/Light_Cyan"
                 android:hint="@string/insert_class_here"
                 android:inputType="number"
-                android:textColor="@color/blue"
-                android:textColorHint="@color/blue"
+                android:textColor="@color/Gunmetal"
+                android:textColorHint="@color/YlnMn_Blue"
                 android:textSize="12sp" />
 
             <TextView
@@ -197,7 +200,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/major"
-                android:textColor="@color/blue" />
+                android:textColor="@color/Burnt_Sienna" />
 
             <EditText
                 android:id="@+id/userMajor"
@@ -206,11 +209,11 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:background="@color/white"
+                android:background="@color/Light_Cyan"
                 android:hint="@string/insert_major_here"
                 android:inputType="text"
-                android:textColor="@color/blue"
-                android:textColorHint="@color/blue"
+                android:textColor="@color/Gunmetal"
+                android:textColorHint="@color/YlnMn_Blue"
                 android:textSize="12sp" />
 
             <Button
@@ -218,14 +221,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/save" />
+                android:text="@string/save"
+                android:backgroundTint="@color/Powder_Blue"/>
 
             <Button
                 android:id="@+id/cancelButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/cancel" />
+                android:text="@string/cancel"
+                android:backgroundTint="@color/Powder_Blue"/>
 
         </LinearLayout>
 
