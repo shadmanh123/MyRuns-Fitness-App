@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.Toast
@@ -16,6 +17,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainer
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -33,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var settingsFragment: Fragment
     private lateinit var fragments:ArrayList<Fragment>
     private lateinit var fragmentAdapter: FragmentAdapter
+//    private lateinit var fragmentTransaction: FragmentTransaction
+//    private lateinit var fragmentContainer: FrameLayout
     private lateinit var tabLayoutMediator: TabLayoutMediator
     private val fragmentTitles = arrayOf("Start", "History", "Settings")
     private lateinit var tabConfigurationStrategy:TabConfigurationStrategy
@@ -43,7 +48,11 @@ class MainActivity : AppCompatActivity() {
 //        startActivity(intent)
         viewPager2 = findViewById(R.id.viewPager2Container)
         tabLayout = findViewById(R.id.tabLayout)
+//        fragmentContainer = findViewById<FrameLayout>(R.id.fragment_container)
         startFragement = StartFragment()
+//        fragmentTransaction = supportFragmentManager.beginTransaction()
+//        fragmentTransaction.replace(fragmentContainer.id, startFragement)
+//        fragmentTransaction.commit()
         historyFragment = HistoryFragment()
         settingsFragment = SettingsFragment()
         fragments = ArrayList()
@@ -55,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         tabConfigurationStrategy = TabConfigurationStrategy{tab, position -> tab.text = fragmentTitles[position]  }
         tabLayoutMediator = TabLayoutMediator(tabLayout,viewPager2,tabConfigurationStrategy)
         tabLayoutMediator.attach()
+
     }
 
 }
