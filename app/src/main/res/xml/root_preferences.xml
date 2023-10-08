@@ -1,0 +1,48 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/account_preference_header">
+
+        <EditTextPreference
+            app:key="profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/profile_settings_title"
+            app:summary="@string/profile_settings_summary"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="privacy_preference_checkbox"
+            android:title="@string/privacy_setting_title"
+            app:summary="@string/privacy_setting_summary"
+            app:key="privacySetting"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/additional_settings_header">
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/unit_preference_entries"
+            android:entryValues="@android:array/organizationTypes"
+            android:key="unit_preference_listview"
+            android:title="@string/unit_preference_title"
+            app:summary="@string/unit_preference_summary" />
+        <EditTextPreference
+            android:key="comments_edittextpreference"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/comment_preference_title"
+            app:summary="@string/comment_preference_summary"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/misc_header">
+
+        <EditTextPreference
+            android:key="webpage"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/webpage_title"
+            app:summary="@string/webpage_url"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

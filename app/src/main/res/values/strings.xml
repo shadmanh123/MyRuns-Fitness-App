@@ -51,4 +51,34 @@
         <item>Other</item>
 
     </string-array>
+    <string name="map">Map</string>
+    <string-array name="unit_preference_entries">
+        <item>Metric (Kilometers)</item>
+        <item>Imperial (Miles)</item>
+    </string-array>
+    <!-- Preference Titles -->
+    <string name="account_preference_header">Account Preference</string>
+    <string name="additional_settings_header">Additional Settings</string>
+    <string name="misc_header">Misc.</string>
+
+    <!-- Profile Setting Titles -->
+    <string name="profile_settings_title">Profile Settings</string>
+    <string name="profile_settings_summary">Profile Photo, Name, Email, Etc</string>
+    
+    <!-- Privacy Setting Titles -->
+    <string name="privacy_setting_title">Privacy Setting</string>
+    <string name="privacy_setting_summary">Posting records anonymously</string>
+
+    <!-- Unit Setting Title-->
+    <string name="unit_preference_title">Unit Preference</string>
+    <string name="unit_preference_summary">Select the units</string>
+
+    <!-- Comment Setting Title -->
+    <string name="comment_preference_title">Comments</string>
+    <string name="comment_preference_summary">Please enter your comments</string>
+
+    <!-- Webpage Title -->
+    <string name="webpage_title">Webpage</string>
+    <string name="webpage_url">https://www.sfu.ca/computing.html</string>
+
 </resources>
