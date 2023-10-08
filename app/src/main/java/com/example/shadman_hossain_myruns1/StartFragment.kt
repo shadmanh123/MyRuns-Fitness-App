@@ -17,6 +17,7 @@ class StartFragment:Fragment() {
     private lateinit var view: View
     private lateinit var inputTypeSpinner: Spinner
     private lateinit var activityTypeSpinner:Spinner
+    private lateinit var inputType:String
     private lateinit var startButton: Button
     private lateinit var intentToManualInputActivity: Intent
     override fun onCreateView(
@@ -36,15 +37,66 @@ class StartFragment:Fragment() {
     return view
     }
     private fun checkInputType(){
-        var inputType = inputTypeSpinner.selectedItem.toString()
+        inputType = inputTypeSpinner.selectedItem.toString()
         if (inputType == "Manual"){
             activity = activityTypeSpinner.selectedItem.toString()
-            intentToManualInputActivity = Intent(requireContext(), ManualInputActivity::class.java)
-            intentToManualInputActivity.putExtra("activity", activity)
-            startActivity(intentToManualInputActivity)
+            var activityCode = getActivityTypeCode(activity)
+            if(activityCode != -1) {
+                intentToManualInputActivity =
+                    Intent(requireContext(), ManualInputActivity::class.java)
+                intentToManualInputActivity.putExtra("activityCode", activityCode)
+                intentToManualInputActivity.putExtra("activityName", activity)
+                startActivity(intentToManualInputActivity)
+            }
         }
         else{
             TODO() //Take them to MapDisplayActivity.kt
         }
+    }
+    private fun getActivityTypeCode(activityType:String):Int{
+        var code = -1
+        if(activityType == "Running"){
+            code = 0
+        }
+        else if(activityType == "Walking"){
+            code = 1
+        }
+        else if(activityType == "Standing"){
+            code = 2
+        }
+        else if(activityType == "Cycling"){
+            code = 3
+        }
+        else if(activityType == "Hiking"){
+            code = 4
+        }
+        else if(activityType == "Downhill Skiing"){
+            code = 5
+        }
+        else if(activityType == "Cross-Country Skiing"){
+            code = 6
+        }
+        else if(activityType == "Snowboarding"){
+            code = 7
+        }
+        else if(activityType == "Skating"){
+            code = 8
+        }
+        else if(activityType == "Swimming"){
+            code = 9
+        }
+        else if(activityType == "Mountain Biking"){
+            code = 10
+        }
+        else if(activityType == "Wheelchair"){
+            code = 11
+        }
+        else if(activityType == "Elliptical"){
+            code = 12
+        }
+        else if(activityType == "Other"){
+            code = 13
+        }
+        return code
     }
 }

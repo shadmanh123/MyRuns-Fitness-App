@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.text.InputType
 import android.view.View
+import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.TextView
@@ -19,6 +20,8 @@ class MyRunsDialogFragment:DialogFragment() {
     private lateinit var calendar: Calendar
     private lateinit var datePicker: DatePicker
     private lateinit var timePicker: TimePicker
+    private lateinit var saveButton: Button
+    private lateinit var cancelButton: Button
 
     companion object{
         fun newInstance(dialogType: String):MyRunsDialogFragment{
@@ -37,8 +40,13 @@ class MyRunsDialogFragment:DialogFragment() {
         builder.setView(view)
         title = view.findViewById(R.id.dialogTitle)
         userInput = view.findViewById(R.id.userInput)
+        saveButton = view.findViewById(R.id.saveButton)
+        cancelButton = view.findViewById(R.id.cancelButton)
         calendar = Calendar.getInstance()
         checkDialogType(dialogType, builder)
+        cancelButton.setOnClickListener {
+            dismiss()
+        }
         return builder.create()
     }
 
@@ -51,25 +59,35 @@ class MyRunsDialogFragment:DialogFragment() {
         }
         else if (dialogType == "Duration") {
             title.text = "Duration"
-            var duration:Long = userInput.toString().toLong()
+            if(!userInput.text.toString().isEmpty()) {
+                var duration: Double = userInput.text.toString().toDouble()
+            }
         }
         else if (dialogType == "Distance") {
             title.text = "Distance"
-            var distance :Long = userInput.toString().toLong()
+            if(!userInput.text.toString().isEmpty()) {
+                var distance: Double = userInput.text.toString().toDouble()
+            }
         }
         else if (dialogType == "Calories") {
             title.text = "Calories"
-            var calories:Long = userInput.toString().toLong()
+            if (!userInput.text.toString().isEmpty()) {
+                var calories: Double = userInput.text.toString().toDouble()
+            }
         }
         else if (dialogType == "Heart Rate") {
             title.text = "Heart Rate"
-            var heartRate:Long = userInput.toString().toLong()
+            if (!userInput.text.toString().isEmpty()) {
+                var heartRate: Double = userInput.text.toString().toDouble()
+            }
         }
         else if (dialogType == "Comment") {
             title.text = "Comment"
             userInput.hint = "Note your thoughts about today's activity here?"
             userInput.inputType = InputType.TYPE_CLASS_TEXT
-            var comment:String = userInput.toString()
+            if (!userInput.text.toString().isEmpty()) {
+                var comment: String = userInput.text.toString()
+            }
         }
     }
 
