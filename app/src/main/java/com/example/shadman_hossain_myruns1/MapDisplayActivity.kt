@@ -15,6 +15,9 @@ class MapDisplayActivity:AppCompatActivity() {
         val typeOfActivityName:String? = intent.getStringExtra("activityName")
 //        Toast.makeText(this, typeOfActivityName.toString(), Toast.LENGTH_SHORT).show()
         saveButton = findViewById(R.id.saveButton)
+        saveButton.setOnClickListener {
+            finish()
+        }
         cancelButton = findViewById(R.id.cancelButton)
         cancelButton.setOnClickListener {
             finish()

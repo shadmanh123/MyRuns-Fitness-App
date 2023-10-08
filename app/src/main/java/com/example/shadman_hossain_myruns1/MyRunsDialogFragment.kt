@@ -22,6 +22,7 @@ class MyRunsDialogFragment:DialogFragment() {
     private lateinit var timePicker: TimePicker
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
+    private lateinit var selectedDate:Calendar
 
     companion object{
         fun newInstance(dialogType: String):MyRunsDialogFragment{
@@ -41,6 +42,9 @@ class MyRunsDialogFragment:DialogFragment() {
         title = view.findViewById(R.id.dialogTitle)
         userInput = view.findViewById(R.id.userInput)
         saveButton = view.findViewById(R.id.saveButton)
+        saveButton.setOnClickListener {
+            dismiss()
+        }
         cancelButton = view.findViewById(R.id.cancelButton)
         calendar = Calendar.getInstance()
         checkDialogType(dialogType, builder)
@@ -97,7 +101,9 @@ class MyRunsDialogFragment:DialogFragment() {
         timePicker.minute = calendar.get(Calendar.MINUTE)
         builder.setView(timePicker)
         builder.setPositiveButton("OK") { _, _ ->
-            val selectedTime: Long = "${timePicker.hour}:${timePicker.minute}".toLong()
+            val storeTime:Long = ((timePicker.hour*60*60*1000) + (timePicker.minute*60*1000)).toLong()
+//            val selectedTime: Long = "${timePicker.hour}:${timePicker.minute}".toLong()
+            dismiss()
         }
         builder.setNegativeButton("Cancel") { _, _ ->
             dismiss()
@@ -112,7 +118,11 @@ class MyRunsDialogFragment:DialogFragment() {
         )
         builder.setView(datePicker)
         builder.setPositiveButton("OK") { _, _ ->
-            val selectedDate:Long = "${datePicker.year}/${datePicker.month + 1}/${datePicker.dayOfMonth}".toLong()
+            selectedDate = Calendar.getInstance()
+            selectedDate.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
+            val storeDateInMillis:Long = selectedDate.timeInMillis
+//            val selectedDate:Long = "${datePicker.year}/${datePicker.month + 1}/${datePicker.dayOfMonth}".toLong()
+            dismiss()
         }
         builder.setNegativeButton("Cancel") { _, _ ->
             dismiss()

@@ -28,6 +28,9 @@ class ManualInputActivity:AppCompatActivity() {
         val typeOfActivityName:String? = intent.getStringExtra("activityName")
 //        Toast.makeText(this, typeOfActivityCode.toString(), Toast.LENGTH_SHORT).show()
         saveButton = findViewById(R.id.saveButton)
+        saveButton.setOnClickListener {
+            finish()
+        }
         cancelButton = findViewById(R.id.cancelButton)
         cancelButton.setOnClickListener {
             finish()
