@@ -20,6 +20,7 @@ class StartFragment:Fragment() {
     private lateinit var inputType:String
     private lateinit var startButton: Button
     private lateinit var intentToManualInputActivity: Intent
+    private lateinit var intentToMapDisplayActivity: Intent
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,7 +51,14 @@ class StartFragment:Fragment() {
             }
         }
         else{
-            TODO() //Take them to MapDisplayActivity.kt
+            activity = activityTypeSpinner.selectedItem.toString()
+            var activityCode = getActivityTypeCode(activity)
+            if(activityCode != -1){
+                intentToMapDisplayActivity = Intent(requireContext(), MapDisplayActivity::class.java)
+                intentToMapDisplayActivity.putExtra("activityCode", activityCode)
+                intentToMapDisplayActivity.putExtra("activityName", activity)
+                startActivity(intentToMapDisplayActivity)
+            }
         }
     }
     private fun getActivityTypeCode(activityType:String):Int{
