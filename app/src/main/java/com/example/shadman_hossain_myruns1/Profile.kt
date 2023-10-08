@@ -1,22 +1,28 @@
 package com.example.shadman_hossain_myruns1
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ListView
 import android.widget.RadioGroup
-import androidx.activity.result.ActivityResultLauncher
-import java.io.File
-import android.app.Activity
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 class Profile:AppCompatActivity() {
@@ -42,6 +48,11 @@ class Profile:AppCompatActivity() {
     private var intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
     private var allValuesEntered = false
     private var firstTimeLoad = false
+    private lateinit var dialogView: View
+    private val optionTitles = arrayOf(
+        "Open Camera", "Select from Gallery"
+    )
+    private lateinit var listView: ListView
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.profile)
@@ -73,8 +84,7 @@ class Profile:AppCompatActivity() {
             }
         }
         photoButton.setOnClickListener {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri)
-            takePhoto(intent)
+            imageOptions()
         }
         saveButton.setOnClickListener {
             if(!allValuesEntered){
@@ -120,7 +130,7 @@ class Profile:AppCompatActivity() {
         else if(userGender.checkedRadioButtonId == -1){
             Toast.makeText(this,"Select a gender", Toast.LENGTH_SHORT).show()
         }
-        else if(userClass.text.toString().isEmpty()){
+        else if(userClass.text.toString().isEmpty() || userClass.text.toString() == "-1"){
             Toast.makeText(this,"Input a class year", Toast.LENGTH_SHORT).show()
         }
         else if(userMajor.text.toString().isEmpty()){
@@ -186,6 +196,27 @@ class Profile:AppCompatActivity() {
     override fun onStop() {
         tempImageFile.delete()
         super.onStop()
+    }
+    private fun imageOptions(){
+        dialogView = LayoutInflater.from(this).inflate(R.layout.photo_options, null)
+        val dialogBuilder = AlertDialog.Builder(this).setView(dialogView).setCancelable(true)
+        val dialog = dialogBuilder.create()
+        dialog.show()
+        listView = dialog.findViewById(R.id.profileImageOptionsListView)
+        val arrayAdapter: ArrayAdapter<String> = ArrayAdapter<String>(this,
+            android.R.layout.simple_list_item_1, optionTitles)
+        listView.adapter = arrayAdapter
+        listView.setOnItemClickListener(){ parent: AdapterView<*>, view: View, position: Int, id: Long ->
+            if (position == 0 ){
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri)
+                takePhoto(intent)
+                dialog.dismiss()
+            }
+            else if (position == 1){
+//                chooseFromGallery()
+                dialog.dismiss()
+            }
+        }
     }
 
 }

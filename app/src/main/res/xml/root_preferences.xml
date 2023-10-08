@@ -3,7 +3,7 @@
 
     <PreferenceCategory app:title="@string/account_preference_header">
 
-        <EditTextPreference
+        <Preference
             app:key="profile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/misc_header">
 
-        <EditTextPreference
+        <Preference
             android:key="webpage"
             android:selectAllOnFocus="true"
             android:singleLine="true"
