@@ -36,23 +36,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var settingsFragment: Fragment
     private lateinit var fragments:ArrayList<Fragment>
     private lateinit var fragmentAdapter: FragmentAdapter
-//    private lateinit var fragmentTransaction: FragmentTransaction
-//    private lateinit var fragmentContainer: FrameLayout
     private lateinit var tabLayoutMediator: TabLayoutMediator
     private val fragmentTitles = arrayOf("Start", "History", "Settings")
     private lateinit var tabConfigurationStrategy:TabConfigurationStrategy
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main)
-//        val intent = Intent(this, Profile::class.java)
-//        startActivity(intent)
         viewPager2 = findViewById(R.id.viewPager2Container)
         tabLayout = findViewById(R.id.tabLayout)
-//        fragmentContainer = findViewById<FrameLayout>(R.id.fragment_container)
         startFragement = StartFragment()
-//        fragmentTransaction = supportFragmentManager.beginTransaction()
-//        fragmentTransaction.replace(fragmentContainer.id, startFragement)
-//        fragmentTransaction.commit()
         historyFragment = HistoryFragment()
         settingsFragment = SettingsFragment()
         fragments = ArrayList()
