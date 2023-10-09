@@ -53,6 +53,9 @@ class Profile:AppCompatActivity() {
         "Open Camera", "Select from Gallery"
     )
     private lateinit var listView: ListView
+    private lateinit var selectPhotoIntent: ActivityResultLauncher<Intent>
+    private lateinit var selectedImageFile: File
+    private val selectedImgFileName = "profile_photo_from_gallery.jpg"
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.profile)
@@ -83,6 +86,12 @@ class Profile:AppCompatActivity() {
                 viewProfilePhoto.photoOfUser.value = bitmap
             }
         }
+//        selectPhotoIntent = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+//        {result: androidx.activity.result.ActivityResult ->
+//            if(result.resultCode == Activity.RESULT_OK) {
+//                handleSelectedImageFromGallery(result.data)
+//            }
+//        }
         photoButton.setOnClickListener {
             imageOptions()
         }
@@ -156,6 +165,13 @@ class Profile:AppCompatActivity() {
             )
 
         }
+        if(selectedImageFile.exists()){
+            Files.copy(
+                selectedImageFile.inputStream(),
+                savedImageFile.toPath(),
+                StandardCopyOption.REPLACE_EXISTING
+            )
+        }
         savedImageUri = FileProvider.getUriForFile(this, "com.MyRuns", savedImageFile)
         firstTimeLoad = true
         editor.apply {
@@ -170,6 +186,7 @@ class Profile:AppCompatActivity() {
             apply()
         }
         tempImageFile.delete()
+//        selectedImageFile.delete()
 
         Toast.makeText(this, "Profile Saved", Toast.LENGTH_SHORT).show()
     }
@@ -187,7 +204,7 @@ class Profile:AppCompatActivity() {
             userMajor.setText(savedProfiles.getString("UserMajor", null))
             userGender.check(savedProfiles.getInt("UserGender", -1))
         }
-        if(firstTimeLoad){
+        if(firstTimeLoad && savedImageUriString != null){
             bitmap = Utilities.getBitMap(this, Uri.parse(savedImageUriString))
             profilePhoto.setImageBitmap(bitmap)
         }
@@ -218,5 +235,41 @@ class Profile:AppCompatActivity() {
             }
         }
     }
+
+    private fun chooseFromGallery(){
+        val intentToGallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        selectPhotoIntent.launch(intentToGallery)
+        setProfilePhoto()
+    }
+//    private fun handleSelectedImageFromGallery(imageData:Intent?){
+//        if (imageData != null) {
+//            var selectedImageUri  = imageData.data
+//            if(selectedImageUri != null) {
+//                selectedImageFile = File(getExternalFilesDir(null),selectedImgFileName)
+//                Log.d("SelectedImage", "File exists: ${selectedImageFile.exists()}")
+//                val directory = selectedImageFile.parentFile
+//                if(!directory.exists()){
+//                    directory.mkdirs()
+//                }
+//                Log.d("SelectedImage", "URI: $selectedImageUri")
+//                Log.d("SelectedImage", "File path: ${selectedImageFile.absolutePath}")
+//                val inputStream = contentResolver.openInputStream(selectedImageUri)
+////                Log.d("SelectedImage", "File exists: ${selectedImageFile.exists()}")
+//                if(selectedImageFile.exists()) {
+//                    Files.copy(
+//                        inputStream,
+//                        selectedImageFile.toPath(),
+//                        StandardCopyOption.REPLACE_EXISTING
+//                    )
+//
+//                }
+//                Log.d("SelectedImage", "File exists: ${selectedImageFile.exists()}")
+//                selectedImageUri = FileProvider.getUriForFile(this, "com.MyRuns", selectedImageFile)
+//                val bitmap = Utilities.getBitMap(this, selectedImageUri)
+//                viewProfilePhoto.photoOfUser.value = bitmap
+//                profilePhoto.setImageBitmap(bitmap)
+//            }
+//        }
+//    }
 
 }
