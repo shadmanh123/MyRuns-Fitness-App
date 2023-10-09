@@ -73,6 +73,7 @@ class Profile:AppCompatActivity() {
         userMajor = findViewById(R.id.userMajor)
         userGender = findViewById(R.id.genderButtonRadioGroup)
         saveButton = findViewById(R.id.saveButton)
+        selectedImageFile = File(getExternalFilesDir(null), selectedImgFileName)
         loadProfile()
         setProfilePhoto()
         viewProfilePhoto = ViewModelProvider(this).get(MyViewModel::class.java)
@@ -86,12 +87,30 @@ class Profile:AppCompatActivity() {
                 viewProfilePhoto.photoOfUser.value = bitmap
             }
         }
-//        selectPhotoIntent = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-//        {result: androidx.activity.result.ActivityResult ->
-//            if(result.resultCode == Activity.RESULT_OK) {
-//                handleSelectedImageFromGallery(result.data)
-//            }
-//        }
+        selectPhotoIntent = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+        { result: androidx.activity.result.ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val selectedImageUri = result.data?.data
+                if (selectedImageUri != null) {
+                    val bitmap = Utilities.getBitMap(this, selectedImageUri)
+                    viewProfilePhoto.photoOfUser.value = bitmap
+                    profilePhoto.setImageBitmap(bitmap)
+                    val directory = selectedImageFile.parentFile
+                    if (!directory.exists()) {
+                        directory.mkdirs()
+                    }
+
+                    val inputStream = contentResolver.openInputStream(selectedImageUri)
+                    if (inputStream != null) {
+                        Files.copy(
+                            inputStream,
+                            selectedImageFile.toPath(),
+                            StandardCopyOption.REPLACE_EXISTING
+                        )
+                    }
+                }
+            }
+        }
         photoButton.setOnClickListener {
             imageOptions()
         }
@@ -115,7 +134,6 @@ class Profile:AppCompatActivity() {
     }
     private fun setProfilePhoto() {
         tempImageFile = File(getExternalFilesDir(null), tempImgFileName)
-//        savedImageFile = File(getExternalFilesDir(null),savedImageFileName)
         if (tempImageFile.length() != 0.toLong()) {
             tempImageUri = FileProvider.getUriForFile(this, "com.MyRuns", tempImageFile)
             bitmap = Utilities.getBitMap(this, tempImageUri)
@@ -153,11 +171,15 @@ class Profile:AppCompatActivity() {
         }
     }
     private fun saveProfile(){
+        if(tempImageFile.length() == 0.toLong() && selectedImageFile.length() == 0.toLong()){
+            Toast.makeText(this,"Nothing new to save",Toast.LENGTH_SHORT).show()
+            return
+        }
         val savedProfiles = getSharedPreferences("Profiles", MODE_PRIVATE)
         val editor = savedProfiles.edit()
         savedImageFile = File(getExternalFilesDir(null),savedImageFileName)
 
-        if(tempImageFile.exists()) {
+        if(tempImageFile.length() != 0.toLong()) {
             Files.copy(
                 tempImageFile.inputStream(),
                 savedImageFile.toPath(),
@@ -165,7 +187,7 @@ class Profile:AppCompatActivity() {
             )
 
         }
-        if(selectedImageFile.exists()){
+        if(selectedImageFile.length() != 0.toLong()){
             Files.copy(
                 selectedImageFile.inputStream(),
                 savedImageFile.toPath(),
@@ -186,7 +208,7 @@ class Profile:AppCompatActivity() {
             apply()
         }
         tempImageFile.delete()
-//        selectedImageFile.delete()
+        selectedImageFile.delete()
 
         Toast.makeText(this, "Profile Saved", Toast.LENGTH_SHORT).show()
     }
@@ -206,12 +228,15 @@ class Profile:AppCompatActivity() {
         }
         if(firstTimeLoad && savedImageUriString != null){
             bitmap = Utilities.getBitMap(this, Uri.parse(savedImageUriString))
-            profilePhoto.setImageBitmap(bitmap)
+            if (bitmap != null) {
+                profilePhoto.setImageBitmap(bitmap)
+            }
         }
     }
 
     override fun onStop() {
         tempImageFile.delete()
+        selectedImageFile.delete()
         super.onStop()
     }
     private fun imageOptions(){
@@ -230,7 +255,7 @@ class Profile:AppCompatActivity() {
                 dialog.dismiss()
             }
             else if (position == 1){
-//                chooseFromGallery()
+                chooseFromGallery()
                 dialog.dismiss()
             }
         }
@@ -239,37 +264,6 @@ class Profile:AppCompatActivity() {
     private fun chooseFromGallery(){
         val intentToGallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         selectPhotoIntent.launch(intentToGallery)
-        setProfilePhoto()
     }
-//    private fun handleSelectedImageFromGallery(imageData:Intent?){
-//        if (imageData != null) {
-//            var selectedImageUri  = imageData.data
-//            if(selectedImageUri != null) {
-//                selectedImageFile = File(getExternalFilesDir(null),selectedImgFileName)
-//                Log.d("SelectedImage", "File exists: ${selectedImageFile.exists()}")
-//                val directory = selectedImageFile.parentFile
-//                if(!directory.exists()){
-//                    directory.mkdirs()
-//                }
-//                Log.d("SelectedImage", "URI: $selectedImageUri")
-//                Log.d("SelectedImage", "File path: ${selectedImageFile.absolutePath}")
-//                val inputStream = contentResolver.openInputStream(selectedImageUri)
-////                Log.d("SelectedImage", "File exists: ${selectedImageFile.exists()}")
-//                if(selectedImageFile.exists()) {
-//                    Files.copy(
-//                        inputStream,
-//                        selectedImageFile.toPath(),
-//                        StandardCopyOption.REPLACE_EXISTING
-//                    )
-//
-//                }
-//                Log.d("SelectedImage", "File exists: ${selectedImageFile.exists()}")
-//                selectedImageUri = FileProvider.getUriForFile(this, "com.MyRuns", selectedImageFile)
-//                val bitmap = Utilities.getBitMap(this, selectedImageUri)
-//                viewProfilePhoto.photoOfUser.value = bitmap
-//                profilePhoto.setImageBitmap(bitmap)
-//            }
-//        }
-//    }
 
 }
