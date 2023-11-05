@@ -5,11 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
-import android.widget.AdapterView
 import android.widget.Button
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 
 class StartFragment:Fragment() {
@@ -41,6 +38,7 @@ class StartFragment:Fragment() {
         inputType = inputTypeSpinner.selectedItem.toString()
         if (inputType == "Manual"){
             activity = activityTypeSpinner.selectedItem.toString()
+            var inputTypeValue: Int = 1
             var activityCode = getActivityTypeCode(activity)
             if(activityCode != -1) {
                 intentToManualInputActivity =
@@ -50,8 +48,9 @@ class StartFragment:Fragment() {
                 startActivity(intentToManualInputActivity)
             }
         }
-        else{
+        else if (inputType == "GPS") {
             activity = activityTypeSpinner.selectedItem.toString()
+            var inputTypeValue: Int = 2
             var activityCode = getActivityTypeCode(activity)
             if(activityCode != -1){
                 intentToMapDisplayActivity = Intent(requireContext(), MapDisplayActivity::class.java)
@@ -59,6 +58,11 @@ class StartFragment:Fragment() {
                 intentToMapDisplayActivity.putExtra("activityName", activity)
                 startActivity(intentToMapDisplayActivity)
             }
+        }
+
+        else{
+            var inputTypeValue: Int = 1
+            //TODO response to Automatic
         }
     }
     private fun getActivityTypeCode(activityType:String):Int{

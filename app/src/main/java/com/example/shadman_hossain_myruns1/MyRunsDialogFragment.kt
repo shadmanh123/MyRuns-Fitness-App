@@ -102,7 +102,6 @@ class MyRunsDialogFragment:DialogFragment() {
         builder.setView(timePicker)
         builder.setPositiveButton("OK") { _, _ ->
             val storeTime:Long = ((timePicker.hour*60*60*1000) + (timePicker.minute*60*1000)).toLong()
-//            val selectedTime: Long = "${timePicker.hour}:${timePicker.minute}".toLong()
             dismiss()
         }
         builder.setNegativeButton("Cancel") { _, _ ->
@@ -121,7 +120,6 @@ class MyRunsDialogFragment:DialogFragment() {
             selectedDate = Calendar.getInstance()
             selectedDate.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
             val storeDateInMillis:Long = selectedDate.timeInMillis
-//            val selectedDate:Long = "${datePicker.year}/${datePicker.month + 1}/${datePicker.dayOfMonth}".toLong()
             dismiss()
         }
         builder.setNegativeButton("Cancel") { _, _ ->
