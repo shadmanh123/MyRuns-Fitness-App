@@ -3,7 +3,6 @@ package com.example.shadman_hossain_myruns1
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.Calendar
 
 @Entity(tableName = "exercise_table")
 data class ExerciseEntry (
@@ -17,7 +16,7 @@ data class ExerciseEntry (
     var activityType: Int? = null,
 
     @ColumnInfo(name = "dateTime_column")
-    var dateTime: Calendar? = null,
+    var dateTime: Long? = null,
 
     @ColumnInfo(name = "duration_column")
     var duration: Double? = null,

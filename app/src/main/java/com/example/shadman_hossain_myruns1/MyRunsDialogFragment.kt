@@ -10,10 +10,15 @@ import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.TimePicker
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import java.util.Calendar
 
+//interface DataSavedListener{
+//    fun onDataSaved(data: String)
+//}
 class MyRunsDialogFragment:DialogFragment() {
+    private lateinit var dialogType: String
     private lateinit var title: TextView
     private lateinit var userInput: EditText
     private lateinit var view: View
@@ -23,6 +28,15 @@ class MyRunsDialogFragment:DialogFragment() {
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
     private lateinit var selectedDate:Calendar
+    private var flag: Boolean = false
+    private var date: Long? = null
+    private var time: Long? = null
+    private var duration: Double? = null
+    private var distance: Double? = null
+    private var calories: Double? = null
+    private var heartRate: Double? = null
+    private var comment: String? = null
+    private var data: String? = null
 
     companion object{
         fun newInstance(dialogType: String):MyRunsDialogFragment{
@@ -35,19 +49,25 @@ class MyRunsDialogFragment:DialogFragment() {
     }
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val bundle = arguments
-        val dialogType = bundle!!.getString("dialogType")
+        dialogType = bundle!!.getString("dialogType")!!
         val builder = Builder(requireActivity())
         view = requireActivity().layoutInflater.inflate(R.layout.simple_dialog,null)
         builder.setView(view)
         title = view.findViewById(R.id.dialogTitle)
         userInput = view.findViewById(R.id.userInput)
-        saveButton = view.findViewById(R.id.saveButton)
-        saveButton.setOnClickListener {
-            dismiss()
-        }
-        cancelButton = view.findViewById(R.id.cancelButton)
         calendar = Calendar.getInstance()
         checkDialogType(dialogType, builder)
+        saveButton = view.findViewById(R.id.saveButton)
+        saveButton.setOnClickListener {
+            if(userInput.text.toString().isNotEmpty()) {
+                data = userInput.text.toString()
+                dataSentToManualInputActivity()
+            }
+            else{
+                Toast.makeText(context, "Input information", Toast.LENGTH_SHORT).show()
+            }
+        }
+        cancelButton = view.findViewById(R.id.cancelButton)
         cancelButton.setOnClickListener {
             dismiss()
         }
@@ -56,42 +76,27 @@ class MyRunsDialogFragment:DialogFragment() {
 
     private fun checkDialogType(dialogType: String?, builder: Builder) {
         if (dialogType == "Date"){
-            createCalenderWidget(builder)
+            createCalenderWidget(builder).toString()
         }
         else if(dialogType == "Time"){
-            createTimeWidget(builder)
+            createTimeWidget(builder).toString()
         }
         else if (dialogType == "Duration") {
             title.text = "Duration"
-            if(!userInput.text.toString().isEmpty()) {
-                var duration: Double = userInput.text.toString().toDouble()
-            }
         }
         else if (dialogType == "Distance") {
             title.text = "Distance"
-            if(!userInput.text.toString().isEmpty()) {
-                var distance: Double = userInput.text.toString().toDouble()
-            }
         }
         else if (dialogType == "Calories") {
             title.text = "Calories"
-            if (!userInput.text.toString().isEmpty()) {
-                var calories: Double = userInput.text.toString().toDouble()
-            }
         }
         else if (dialogType == "Heart Rate") {
             title.text = "Heart Rate"
-            if (!userInput.text.toString().isEmpty()) {
-                var heartRate: Double = userInput.text.toString().toDouble()
-            }
         }
         else if (dialogType == "Comment") {
             title.text = "Comment"
             userInput.hint = "Note your thoughts about today's activity here?"
             userInput.inputType = InputType.TYPE_CLASS_TEXT
-            if (!userInput.text.toString().isEmpty()) {
-                var comment: String = userInput.text.toString()
-            }
         }
     }
 
@@ -101,8 +106,9 @@ class MyRunsDialogFragment:DialogFragment() {
         timePicker.minute = calendar.get(Calendar.MINUTE)
         builder.setView(timePicker)
         builder.setPositiveButton("OK") { _, _ ->
-            val storeTime:Long = ((timePicker.hour*60*60*1000) + (timePicker.minute*60*1000)).toLong()
-            dismiss()
+            time = ((timePicker.hour*60*60*1000) + (timePicker.minute*60*1000)).toLong()
+            data = time.toString()
+            dataSentToManualInputActivity()
         }
         builder.setNegativeButton("Cancel") { _, _ ->
             dismiss()
@@ -119,10 +125,19 @@ class MyRunsDialogFragment:DialogFragment() {
         builder.setPositiveButton("OK") { _, _ ->
             selectedDate = Calendar.getInstance()
             selectedDate.set(datePicker.year, datePicker.month, datePicker.dayOfMonth)
-            val storeDateInMillis:Long = selectedDate.timeInMillis
-            dismiss()
+            date = selectedDate.timeInMillis
+            data = date.toString()
+            dataSentToManualInputActivity()
         }
         builder.setNegativeButton("Cancel") { _, _ ->
+            dismiss()
+        }
+    }
+
+    private fun dataSentToManualInputActivity() {
+        if (requireActivity() is ManualInputActivity) {
+            val activity = requireActivity() as ManualInputActivity
+            activity.onDataSaved(data!!, dialogType)
             dismiss()
         }
     }

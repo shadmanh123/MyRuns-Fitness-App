@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 
-class ActivityEntriesAdapter(private val context: Context, private var entryList: List<ExerciseEntry>, unitPreference: String):
+class ActivityEntriesAdapter(private val context: Context, private var entryList: List<ExerciseEntry>):
 BaseAdapter() {
     private lateinit var view: View
     private lateinit var activityType: TextView
     private lateinit var activityTime: TextView
     private lateinit var distance: TextView
     private lateinit var duration: TextView
-    private val unitPreference = unitPreference
+//    private lateinit var unitPreference: Int
     override fun getCount(): Int {
         return entryList.size
     }
@@ -42,7 +42,7 @@ BaseAdapter() {
         return view
     }
 
-    private fun replace(newEntryList: List<ExerciseEntry>){
+    fun replace(newEntryList: List<ExerciseEntry>){
         entryList = newEntryList
     }
 }

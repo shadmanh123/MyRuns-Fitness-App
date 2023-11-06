@@ -38,13 +38,14 @@ class StartFragment:Fragment() {
         inputType = inputTypeSpinner.selectedItem.toString()
         if (inputType == "Manual"){
             activity = activityTypeSpinner.selectedItem.toString()
-            var inputTypeValue: Int = 1
+            var inputTypeCode: Int = 1
             var activityCode = getActivityTypeCode(activity)
             if(activityCode != -1) {
                 intentToManualInputActivity =
                     Intent(requireContext(), ManualInputActivity::class.java)
                 intentToManualInputActivity.putExtra("activityCode", activityCode)
                 intentToManualInputActivity.putExtra("activityName", activity)
+                intentToManualInputActivity.putExtra("inputTypeCode", inputTypeCode)
                 startActivity(intentToManualInputActivity)
             }
         }
