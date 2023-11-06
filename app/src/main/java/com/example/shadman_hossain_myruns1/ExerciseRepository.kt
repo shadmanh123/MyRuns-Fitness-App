@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 
 class ExerciseRepository(private val exerciseDatabaseDao: ExerciseDatabaseDao) {
 
-    val allComments: Flow<List<ExerciseEntry>> = exerciseDatabaseDao.getAllEntries()
+    val allEntries: Flow<List<ExerciseEntry>> = exerciseDatabaseDao.getAllEntries()
 
     fun insert(exerciseEntry: ExerciseEntry){
         CoroutineScope(IO).launch {

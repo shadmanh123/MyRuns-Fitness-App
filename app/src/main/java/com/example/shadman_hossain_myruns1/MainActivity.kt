@@ -11,7 +11,7 @@ import com.google.android.material.tabs.TabLayoutMediator.TabConfigurationStrate
 class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager2: ViewPager2
-    private lateinit var startFragement:Fragment
+    private lateinit var startFragment:Fragment
     private lateinit var historyFragment: Fragment
     private lateinit var settingsFragment: Fragment
     private lateinit var fragments:ArrayList<Fragment>
@@ -24,11 +24,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main)
         viewPager2 = findViewById(R.id.viewPager2Container)
         tabLayout = findViewById(R.id.tabLayout)
-        startFragement = StartFragment()
+        startFragment = StartFragment()
         historyFragment = HistoryFragment()
         settingsFragment = SettingsFragment()
         fragments = ArrayList()
-        fragments.add(startFragement)
+        fragments.add(startFragment)
         fragments.add(historyFragment)
         fragments.add(settingsFragment)
         fragmentAdapter = FragmentAdapter(this,fragments)

@@ -7,8 +7,8 @@ import androidx.room.RoomDatabase
 
 @Database(entities = [ExerciseEntry::class], version = 1)
 abstract class ExerciseDatabase: RoomDatabase() {
-    abstract val exerciseDatabase: ExerciseDatabase
 
+    abstract val exerciseDatabaseDao: ExerciseDatabaseDao
     companion object{
         @Volatile
         private var INSTANCE: ExerciseDatabase? = null
