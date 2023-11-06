@@ -5,6 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ActivityEntriesAdapter(private val context: Context, private var entryList: List<ExerciseEntry>):
 BaseAdapter() {
@@ -35,7 +38,9 @@ BaseAdapter() {
         duration = view.findViewById(R.id.duration)
 
         activityType.text = entryList.get(position).id.toString()
-        activityTime.text = entryList.get(position).dateTime.toString()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val formattedDateTime = dateFormat.format(Date(entryList.get(position).dateTime!!))
+        activityTime.text = formattedDateTime.toString()
         distance.text = entryList.get(position).distance.toString()
         duration.text = entryList.get(position).duration.toString()
 
