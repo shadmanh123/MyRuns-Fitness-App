@@ -83,6 +83,7 @@ class MyRunsDialogFragment:DialogFragment() {
         }
         else if (dialogType == "Duration") {
             title.text = "Duration"
+            userInput.hint = "Input duration in minutes"
         }
         else if (dialogType == "Distance") {
             title.text = "Distance"

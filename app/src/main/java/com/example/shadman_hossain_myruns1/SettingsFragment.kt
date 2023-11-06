@@ -10,6 +10,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
     private lateinit var intentToProfile: Intent
     private lateinit var intentToBrowser: Intent
     private lateinit var classUrl:String
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         var profile = findPreference<Preference>("profile")
@@ -23,6 +24,19 @@ class SettingsFragment: PreferenceFragmentCompat() {
             classUrl = "https://www.sfu.ca/computing.html"
             intentToBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(classUrl))
             startActivity(intentToBrowser)
+            true
+        }
+        var distanceUnitPreference = findPreference<Preference>("unit_preference_entries")
+        distanceUnitPreference?.setOnPreferenceChangeListener { _, newValue ->
+            var unitPreference = newValue.toString()
+            val adapter = activity as ActivityEntriesAdapter
+//            adapter.setUnitPreference(unitPreference)
+//            if(unitPreference == "kilometers"){
+//                adapter.getUnitPreference(1)
+//            }
+//            else{
+//                adapter.getUnitPreference(2)
+//            }
             true
         }
     }
