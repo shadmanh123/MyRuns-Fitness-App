@@ -20,4 +20,8 @@ class ExerciseRepository(private val exerciseDatabaseDao: ExerciseDatabaseDao) {
             exerciseDatabaseDao.deleteExercise(id)
         }
     }
+
+    fun getEntryByID(entryID: Long):ExerciseEntry?{
+        return exerciseDatabaseDao.getEntryByID(entryID)
+    }
 }

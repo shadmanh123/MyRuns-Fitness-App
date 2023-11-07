@@ -12,6 +12,7 @@ class MapDisplayActivity:AppCompatActivity() {
         setContentView(R.layout.map_display)
         val typeOfActivityCode: Int = intent.getIntExtra("activityCode", -1)
         val typeOfActivityName:String? = intent.getStringExtra("activityName")
+        val entryKey = intent.getIntExtra("entryKey", -1)
         saveButton = findViewById(R.id.saveButton)
         saveButton.setOnClickListener {
             finish()

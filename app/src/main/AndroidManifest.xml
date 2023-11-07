@@ -43,6 +43,7 @@
         </provider>
         <activity android:name=".ManualInputActivity"/>
         <activity android:name=".MapDisplayActivity"/>
+        <activity android:name=".DisplayEntryActivity"/>
     </application>
 
 </manifest>

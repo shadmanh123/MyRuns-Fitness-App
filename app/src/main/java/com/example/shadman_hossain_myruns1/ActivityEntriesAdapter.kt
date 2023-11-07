@@ -28,14 +28,13 @@ BaseAdapter() {
         return entryList.size
     }
 
-    override fun getItem(p0: Int): Any {
+    override fun getItem(p0: Int): ExerciseEntry {
         return entryList.get(p0)
     }
 
     override fun getItemId(p0: Int): Long {
         return p0.toLong()
     }
-
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         view = View.inflate(context, R.layout.activity_entry_adapter, null)
@@ -69,6 +68,7 @@ BaseAdapter() {
         distance.text = formattedDistance
     }
 
+
 //    fun getUnitPreference(key: Int){
 //        if(key == 1){
 //            unitPreference = "km"
@@ -93,7 +93,7 @@ BaseAdapter() {
     fun replace(newEntryList: List<ExerciseEntry>){
         entryList = newEntryList
     }
-    private fun checkActivityType(position: Int) {
+    fun checkActivityType(position: Int) {
         var activityTypeCode = entryList.get(position).activityType
         if (activityTypeCode == 0){
             activity = "Runnning"

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Light_Cyan">
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/delete"
+        android:backgroundTint="@color/Powder_Blue"
+
+        />
+    <TextView
+        android:id="@+id/activityTypeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/activity_type"
+        android:textColor="@color/Burnt_Sienna"
+        />
+
+    <TextView
+        android:id="@+id/activityTypeValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/Gunmetal" />
+
+    <TextView
+        android:id="@+id/dateTimeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/date_and_time"
+        android:textColor="@color/Burnt_Sienna" />
+
+    <TextView
+        android:id="@+id/dateTimeValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/Gunmetal" />
+
+    <TextView
+        android:id="@+id/durationTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/duration"
+        android:textColor="@color/Burnt_Sienna" />
+
+    <TextView
+        android:id="@+id/durationValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/Gunmetal" />
+
+    <TextView
+        android:id="@+id/distanceTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/distance"
+        android:textColor="@color/Burnt_Sienna" />
+
+    <TextView
+        android:id="@+id/distanceValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/Gunmetal" />
+
+    <TextView
+        android:id="@+id/calorieTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/calories"
+        android:textColor="@color/Burnt_Sienna" />
+
+    <TextView
+        android:id="@+id/calorieValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/Gunmetal" />
+
+    <TextView
+        android:id="@+id/heartRateTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/heart_rate"
+        android:textColor="@color/Burnt_Sienna" />
+
+    <TextView
+        android:id="@+id/heartRateValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/Gunmetal" />
+
+    <TextView
+        android:id="@+id/commentTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/comment"
+        android:textColor="@color/Burnt_Sienna" />
+
+    <TextView
+        android:id="@+id/commentValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/Gunmetal" />
+
+</LinearLayout>

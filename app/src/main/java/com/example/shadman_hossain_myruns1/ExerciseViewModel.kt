@@ -15,6 +15,10 @@ class ExerciseViewModel(private val repository: ExerciseRepository): ViewModel()
     fun delete(id: Long){
         repository.delete(id)
     }
+
+    fun getEntryByID(entryID: Long): ExerciseEntry?{
+        return repository.getEntryByID(entryID)
+    }
 }
 
 class ExerciseViewModelFactory(private val repository: ExerciseRepository): ViewModelProvider.Factory{

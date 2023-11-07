@@ -1,5 +1,6 @@
 package com.example.shadman_hossain_myruns1
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,8 @@ class HistoryFragment:Fragment() {
     private lateinit var repository: ExerciseRepository
     private lateinit var exerciseViewModelFactory: ExerciseViewModelFactory
     private lateinit var exerciseViewModel: ExerciseViewModel
+    private lateinit var intentToDisplayEntryActivity: Intent
+    private lateinit var intentToMapDisplayActivity: Intent
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,7 +41,31 @@ class HistoryFragment:Fragment() {
             arrayAdapter.replace(it)
             arrayAdapter.notifyDataSetChanged()
         })
+        listView.setOnItemClickListener { adapterView, view, position, id ->
+            val selectedEntry = arrayAdapter.getItem(position)
+            val entryKey = selectedEntry.id
+            val inputType = selectedEntry.inputType
+            if (inputType == 1) {
+                intentToDisplayEntryActivity =
+                    Intent(requireContext(), DisplayEntryActivity::class.java)
+                intentToDisplayEntryActivity.putExtra("entryKey", entryKey)
+                startActivity(intentToDisplayEntryActivity)
+            }
+            else if (inputType == 2){
+                intentToMapDisplayActivity = Intent(requireContext(), MapDisplayActivity::class.java)
+                intentToMapDisplayActivity.putExtra("entryKey", entryKey)
+                startActivity(intentToMapDisplayActivity)
+            }
+        }
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        exerciseViewModel.allExerciseLiveData.observe(requireActivity(), {
+            arrayAdapter.replace(it)
+            arrayAdapter.notifyDataSetChanged()
+        })
     }
 }
