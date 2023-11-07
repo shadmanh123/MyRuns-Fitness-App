@@ -53,13 +53,13 @@ class DisplayEntryActivity: AppCompatActivity() {
 
         activityToDisplay = getActivitytoDisplay(entryKey)
         if(entryKey != 0L) {
-            var activityResult = checkActivityType(activityToDisplay!!.activityType!!.toInt())
+            val activityResult = checkActivityType(activityToDisplay!!.activityType!!.toInt())
             activityTypeUI.text = activityResult
-            var dateTimeFormatted = dateTimeFormatter(activityToDisplay!!.dateTime!!)
+            val dateTimeFormatted = dateTimeFormatter(activityToDisplay!!.dateTime!!)
             dateTimeUI.text = dateTimeFormatted
-            var durationFormatted = durationFormatter(activityToDisplay!!.duration!!)
+            val durationFormatted = durationFormatter(activityToDisplay!!.duration!!)
             durationUI.text = durationFormatted
-            var distanceFormatted = distanceFormatted(activityToDisplay!!.distance!!)
+            val distanceFormatted = distanceFormatted(activityToDisplay!!.distance!!)
             distanceUI.text = distanceFormatted
             calorieUI.text = activityToDisplay!!.calorie.toString()
             heartRateUI.text = activityToDisplay!!.heartRate.toString()
@@ -68,7 +68,8 @@ class DisplayEntryActivity: AppCompatActivity() {
         }
 
         deleteButton.setOnClickListener {
-
+            exerciseViewModel.delete(entryKey)
+            finish()
         }
     }
 
@@ -82,10 +83,10 @@ class DisplayEntryActivity: AppCompatActivity() {
     }
 
     private fun durationFormatter(duration: Double): String {
-        var durationValue = duration
-        if(durationValue.toDouble() > 60){
-            var hours = floor(durationValue.toDouble()/60)
-            var minutes = durationValue.toDouble() - 60*hours
+        val durationValue = duration
+        if(durationValue > 60){
+            val hours = floor(durationValue /60)
+            val minutes = durationValue - 60*hours
             formattedDuration = hours.toInt().toString()+" hours : "+minutes.toInt().toString()+" mins"
         }
         else{
@@ -94,19 +95,19 @@ class DisplayEntryActivity: AppCompatActivity() {
         return formattedDuration
     }
 
-    fun distanceFormatted(distance: Double): String {
-        var distanceValue = distance.toString()
-        var formattedDistance = distanceValue+unitPreference
+    private fun distanceFormatted(distance: Double): String {
+        val distanceValue = distance.toString()
+        val formattedDistance = distanceValue+unitPreference
         return formattedDistance
     }
 
-    fun dateTimeFormatter(dateTime: Long): String {
+    private fun dateTimeFormatter(dateTime: Long): String {
         dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         formattedDateTime = dateFormat.format(Date(dateTime))
         return formattedDateTime
     }
 
-    fun checkActivityType(activityTypeCode: Int): String {
+    private fun checkActivityType(activityTypeCode: Int): String {
         if (activityTypeCode == 0){
             activity = "Runnning"
         }

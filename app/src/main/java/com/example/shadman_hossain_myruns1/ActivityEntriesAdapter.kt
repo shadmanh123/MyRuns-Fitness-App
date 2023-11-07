@@ -50,21 +50,21 @@ BaseAdapter() {
     }
 
     private fun durationFormat(position: Int) {
-        var durationValue = entryList.get(position).duration.toString()
+        val durationValue = entryList.get(position).duration.toString()
         if(durationValue.toDouble() > 60){
-            var hours = floor(durationValue.toDouble()/60)
-            var minutes = durationValue.toDouble() - 60*hours
+            val hours = floor(durationValue.toDouble()/60)
+            val minutes = durationValue.toDouble() - 60*hours
             formattedDuration = hours.toInt().toString()+" hours : "+minutes.toInt().toString()+" mins"
         }
         else{
-            formattedDuration = durationValue.toString() + " mins"
+            formattedDuration = durationValue + " mins"
         }
         duration.text = formattedDuration
     }
 
     private fun distanceFormat(position: Int) {
-        var distanceValue = entryList.get(position).distance.toString()
-        var formattedDistance = distanceValue+unitPreference
+        val distanceValue = entryList.get(position).distance.toString()
+        val formattedDistance = distanceValue+unitPreference
         distance.text = formattedDistance
     }
 
@@ -94,7 +94,7 @@ BaseAdapter() {
         entryList = newEntryList
     }
     fun checkActivityType(position: Int) {
-        var activityTypeCode = entryList.get(position).activityType
+        val activityTypeCode = entryList.get(position).activityType
         if (activityTypeCode == 0){
             activity = "Runnning"
         }

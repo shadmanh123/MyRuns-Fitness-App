@@ -23,7 +23,7 @@ class StartFragment:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ):
-            View?{
+            View {
         view = inflater.inflate(R.layout.start_fragment, container,false)
         activityTypeSpinner = view.findViewById<Spinner>(R.id.activityTypeSpinner)
         inputTypeSpinner = view.findViewById(R.id.inputTypeSpinner)
@@ -38,8 +38,8 @@ class StartFragment:Fragment() {
         inputType = inputTypeSpinner.selectedItem.toString()
         if (inputType == "Manual"){
             activity = activityTypeSpinner.selectedItem.toString()
-            var inputTypeCode: Int = 1
-            var activityCode = getActivityTypeCode(activity)
+            val inputTypeCode = 1
+            val activityCode = getActivityTypeCode(activity)
             if(activityCode != -1) {
                 intentToManualInputActivity =
                     Intent(requireContext(), ManualInputActivity::class.java)
@@ -52,7 +52,7 @@ class StartFragment:Fragment() {
         else if (inputType == "GPS") {
             activity = activityTypeSpinner.selectedItem.toString()
             var inputTypeValue: Int = 2
-            var activityCode = getActivityTypeCode(activity)
+            val activityCode = getActivityTypeCode(activity)
             if(activityCode != -1){
                 intentToMapDisplayActivity = Intent(requireContext(), MapDisplayActivity::class.java)
                 intentToMapDisplayActivity.putExtra("activityCode", activityCode)

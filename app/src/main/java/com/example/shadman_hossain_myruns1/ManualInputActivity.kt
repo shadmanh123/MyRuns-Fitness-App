@@ -19,11 +19,8 @@ class ManualInputActivity:AppCompatActivity() {
     private var typeOfActivityCode: Int = -1
     private var typeOfActivityName: String? = null
     private var inputTypeCode: Int = -1
-    private lateinit var dialogFragment: MyRunsDialogFragment
-    private lateinit var arguments: Bundle
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
-    private lateinit var arrayAdapter: ArrayAdapter<String>
     private var date: Long? = null
     private var time: Long? = null
     private var dateTime: Long? = null
@@ -70,7 +67,7 @@ class ManualInputActivity:AppCompatActivity() {
         val arrayAdapter: ArrayAdapter<String> = ArrayAdapter<String>(this,
             android.R.layout.simple_list_item_1, inputTitles)
         listView.adapter = arrayAdapter
-        listView.setOnItemClickListener(){ parent: AdapterView<*>, view: View, position: Int, id: Long ->
+        listView.setOnItemClickListener { _: AdapterView<*>, _: View, position: Int, _: Long ->
             val dialogType = inputTitles[position]
             val dialogFragment = MyRunsDialogFragment.newInstance(dialogType)
             dialogFragment.show(supportFragmentManager, "MyRunsDialog")
@@ -81,7 +78,7 @@ class ManualInputActivity:AppCompatActivity() {
 
     private fun saveToExerciseDatabase() {
         getDateTime()
-        var exerciseEntry = ExerciseEntry(
+        val exerciseEntry = ExerciseEntry(
             inputType = inputTypeCode, activityType = typeOfActivityCode, dateTime = dateTime,
             duration = duration, distance = distance, calorie = calories, heartRate = heartRate,
             comment = comment

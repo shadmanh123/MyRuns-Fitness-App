@@ -14,9 +14,6 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import java.util.Calendar
 
-//interface DataSavedListener{
-//    fun onDataSaved(data: String)
-//}
 class MyRunsDialogFragment:DialogFragment() {
     private lateinit var dialogType: String
     private lateinit var title: TextView
@@ -28,14 +25,8 @@ class MyRunsDialogFragment:DialogFragment() {
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
     private lateinit var selectedDate:Calendar
-    private var flag: Boolean = false
     private var date: Long? = null
     private var time: Long? = null
-    private var duration: Double? = null
-    private var distance: Double? = null
-    private var calories: Double? = null
-    private var heartRate: Double? = null
-    private var comment: String? = null
     private var data: String? = null
 
     companion object{

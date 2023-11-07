@@ -25,7 +25,7 @@ class HistoryFragment:Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         view = inflater.inflate(R.layout.history_fragment, container,false)
         listView = view.findViewById(R.id.historyEntriesListView)
         arrayList = ArrayList()
