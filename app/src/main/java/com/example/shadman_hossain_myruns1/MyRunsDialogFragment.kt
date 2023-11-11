@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import java.util.Calendar
 
@@ -25,6 +26,7 @@ class MyRunsDialogFragment:DialogFragment() {
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
     private lateinit var selectedDate:Calendar
+    private lateinit var distance: String
     private var date: Long? = null
     private var time: Long? = null
     private var data: String? = null
@@ -51,8 +53,15 @@ class MyRunsDialogFragment:DialogFragment() {
         saveButton = view.findViewById(R.id.saveButton)
         saveButton.setOnClickListener {
             if(userInput.text.toString().isNotEmpty()) {
-                data = userInput.text.toString()
-                dataSentToManualInputActivity()
+                if(dialogType == "Distance"){ //Checking if distance because distance data format is different than rest
+                    var userInputResponse = userInput.text.toString() + " " + returnUnitPreference()
+                    data = userInputResponse
+                    dataSentToManualInputActivity()
+                }
+                else {
+                    data = userInput.text.toString()
+                    dataSentToManualInputActivity()
+                }
             }
             else{
                 Toast.makeText(context, "Input information", Toast.LENGTH_SHORT).show()
@@ -78,6 +87,8 @@ class MyRunsDialogFragment:DialogFragment() {
         }
         else if (dialogType == "Distance") {
             title.text = "Distance"
+            userInput.hint = "Input distance information "
+//            createDistanceWidget(builder)
         }
         else if (dialogType == "Calories") {
             title.text = "Calories"
@@ -123,6 +134,17 @@ class MyRunsDialogFragment:DialogFragment() {
         }
         builder.setNegativeButton("Cancel") { _, _ ->
             dismiss()
+        }
+    }
+
+    private fun returnUnitPreference(): String{
+        val unitType = this.requireContext().getSharedPreferences("Unit", AppCompatActivity.MODE_PRIVATE)
+        var type = unitType.getString("unitType", null)
+        if (type != null){
+            return type
+        }
+        else{
+            return "km"
         }
     }
 

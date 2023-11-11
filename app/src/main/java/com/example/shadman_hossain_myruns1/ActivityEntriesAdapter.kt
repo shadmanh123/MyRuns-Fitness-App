@@ -1,17 +1,19 @@
 package com.example.shadman_hossain_myruns1
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.floor
 
 class ActivityEntriesAdapter(private val context: Context, private var entryList: List<ExerciseEntry>):
-BaseAdapter() {
+    BaseAdapter() {
     private lateinit var view: View
     private lateinit var activityType: TextView
     private lateinit var activityTime: TextView
@@ -22,8 +24,14 @@ BaseAdapter() {
     private lateinit var activity: String
     private var unitPreference:String = "km"
     private lateinit var formattedDuration: String
+    private lateinit var durationValue: String
+    private lateinit var distanceValue: String
+    private lateinit var formattedDistance: String
+    private lateinit var distanceValueList: List<String>
+    private lateinit var unitType: SharedPreferences
+    private lateinit var unitTypeSaved: String
 
-//    private lateinit var unitPreference: Int
+    //    private lateinit var unitPreference: Int
     override fun getCount(): Int {
         return entryList.size
     }
@@ -50,7 +58,7 @@ BaseAdapter() {
     }
 
     private fun durationFormat(position: Int) {
-        val durationValue = entryList.get(position).duration.toString()
+        durationValue = entryList.get(position).duration.toString()
         if(durationValue.toDouble() > 60){
             val hours = floor(durationValue.toDouble()/60)
             val minutes = durationValue.toDouble() - 60*hours
@@ -63,20 +71,50 @@ BaseAdapter() {
     }
 
     private fun distanceFormat(position: Int) {
-        val distanceValue = entryList.get(position).distance.toString()
-        val formattedDistance = distanceValue+unitPreference
+        distanceValue = entryList.get(position).distance.toString()
+        getUnitPreference()
+        unitTypeSaved = determineUnitTypeSaved(distanceValue)
+        if (unitTypeSaved == unitPreference) {
+            formattedDistance = distanceValue + unitPreference
+        }
+        else{
+            formattedDistance = convertDistanceValue(distanceValue)
+        }
         distance.text = formattedDistance
     }
 
+    private fun convertDistanceValue(distanceValue: String):String {
+        var distanceValueInt = distanceValueList[0].toInt()
+        if (unitPreference == "km"){
+            distanceValueInt = (distanceValueInt*1.60934).toInt()
+            return distanceValueInt.toString()
+        }
+        else{
+            distanceValueInt = (distanceValueInt*0.621371).toInt()
+            return distanceValueInt.toString()
+        }
 
-//    fun getUnitPreference(key: Int){
-//        if(key == 1){
-//            unitPreference = "km"
-//        }
-//        else{
-//            unitPreference = "miles"
-//        }
-//    }
+    }
+
+    private fun determineUnitTypeSaved(distanceValue: String):String {
+        distanceValueList = distanceValue.split(" ")
+        var unitTypeStored = distanceValueList[1]
+        if (unitTypeStored == "miles"){
+            return "mi"
+        }
+        else{
+            return "km"
+        }
+    }
+
+
+    fun getUnitPreference(){
+        unitType = context.getSharedPreferences("Unit", AppCompatActivity.MODE_PRIVATE)
+        var type = unitType.getString("unitType", null)
+        if (type != null){
+            unitPreference = type
+        }
+    }
 
 
 //    fun setUnitPreference(unit: String){

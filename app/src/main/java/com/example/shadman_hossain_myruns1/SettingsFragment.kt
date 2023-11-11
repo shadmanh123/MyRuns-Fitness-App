@@ -1,8 +1,10 @@
 package com.example.shadman_hossain_myruns1
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 
@@ -29,7 +31,11 @@ class SettingsFragment: PreferenceFragmentCompat() {
         var distanceUnitPreference = findPreference<Preference>("unit_preference_entries")
         distanceUnitPreference?.setOnPreferenceChangeListener { _, newValue ->
             var unitPreference = newValue.toString()
-            val adapter = activity as ActivityEntriesAdapter
+            val unitType: SharedPreferences = requireContext().getSharedPreferences("Unit", AppCompatActivity.MODE_PRIVATE)
+            unitType.edit().apply{
+                putString("unitType", unitPreference)
+                apply()
+            }
 //            adapter.setUnitPreference(unitPreference)
 //            if(unitPreference == "kilometers"){
 //                adapter.getUnitPreference(1)
