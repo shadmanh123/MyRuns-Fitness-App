@@ -101,7 +101,12 @@ class DisplayEntryActivity: AppCompatActivity() {
     private fun getUnitPreference(): String{
         unitType = this.getSharedPreferences("Unit", AppCompatActivity.MODE_PRIVATE)
         var type = unitType.getString("unitType", "km")
-        return type!!
+        if (type == "miles"){
+            return "mi"
+        }
+        else{
+            return "km"
+        }
     }
 
     private fun distanceFormatted(distance: Double, unitTypeSaved: String): String {
@@ -120,7 +125,7 @@ class DisplayEntryActivity: AppCompatActivity() {
 
     private fun convertDistanceValue(distanceValue: String, unitTypeSaved: String):String {
         var distanceValueDouble = distanceValue.toDouble()
-        if (unitPreference == "km" && unitTypeSaved == "miles"){
+        if (unitPreference == "km" && unitTypeSaved == "mi"){
             distanceValueDouble = (distanceValueDouble*1.60934)
             return distanceValueDouble.toString()
         }

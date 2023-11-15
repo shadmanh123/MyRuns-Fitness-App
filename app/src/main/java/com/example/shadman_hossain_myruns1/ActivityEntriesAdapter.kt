@@ -97,7 +97,7 @@ class ActivityEntriesAdapter(private val context: Context, private var entryList
 
     private fun determineUnitTypeSaved(position: Int):String {
         val unitTypeStored = entryList.get(position).distanceUnit!!
-        if (unitTypeStored == "miles"){
+        if (unitTypeStored == "mi"){
             return "mi"
         }
         else{
