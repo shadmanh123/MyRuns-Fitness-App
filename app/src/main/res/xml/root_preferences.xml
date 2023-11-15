@@ -24,7 +24,7 @@
         <ListPreference
             android:defaultValue="1"
             android:entries="@array/unit_preference_entries"
-            android:entryValues="@android:array/organizationTypes"
+            android:entryValues="@array/unit_preference_values"
             android:key="unit_preference_listview"
             android:title="@string/unit_preference_title"
             app:summary="@string/unit_preference_summary" />

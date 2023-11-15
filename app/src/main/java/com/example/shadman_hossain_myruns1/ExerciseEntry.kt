@@ -24,6 +24,9 @@ data class ExerciseEntry (
     @ColumnInfo(name = "distance_column")
     var distance: Double? = null,
 
+    @ColumnInfo(name = "distanceUnit_column")
+    var distanceUnit: String? = null,
+
     @ColumnInfo(name = "avgPace_column")
     var avgPace: Double? = null,
 

@@ -139,9 +139,9 @@ class MyRunsDialogFragment:DialogFragment() {
 
     private fun returnUnitPreference(): String{
         val unitType = this.requireContext().getSharedPreferences("Unit", AppCompatActivity.MODE_PRIVATE)
-        var type = unitType.getString("unitType", null)
-        if (type != null){
-            return type
+        var type = unitType.getString("unitType", "km")
+        if (type == "miles"){
+            return "mi"
         }
         else{
             return "km"

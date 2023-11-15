@@ -1,5 +1,6 @@
 package com.example.shadman_hossain_myruns1
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -29,9 +30,11 @@ class DisplayEntryActivity: AppCompatActivity() {
     private lateinit var formattedDateTime: String
     private lateinit var activity: String
     private lateinit var formattedDuration: String
-    private var unitPreference = "km"
+    private lateinit var formattedDistance: String
+    private lateinit var unitPreference: String
     private var entryKey: Long = 0L
     private var activityToDisplay: ExerciseEntry? = null
+    private lateinit var unitType: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.display_entry_activity)
@@ -59,7 +62,7 @@ class DisplayEntryActivity: AppCompatActivity() {
             dateTimeUI.text = dateTimeFormatted
             val durationFormatted = durationFormatter(activityToDisplay!!.duration!!)
             durationUI.text = durationFormatted
-            val distanceFormatted = distanceFormatted(activityToDisplay!!.distance!!)
+            val distanceFormatted = distanceFormatted(activityToDisplay!!.distance!!, activityToDisplay!!.distanceUnit!!)
             distanceUI.text = distanceFormatted
             calorieUI.text = activityToDisplay!!.calorie.toString()
             heartRateUI.text = activityToDisplay!!.heartRate.toString()
@@ -95,10 +98,37 @@ class DisplayEntryActivity: AppCompatActivity() {
         return formattedDuration
     }
 
-    private fun distanceFormatted(distance: Double): String {
+    private fun getUnitPreference(): String{
+        unitType = this.getSharedPreferences("Unit", AppCompatActivity.MODE_PRIVATE)
+        var type = unitType.getString("unitType", "km")
+        return type!!
+    }
+
+    private fun distanceFormatted(distance: Double, unitTypeSaved: String): String {
         val distanceValue = distance.toString()
-        val formattedDistance = distanceValue+unitPreference
+        unitPreference = getUnitPreference()
+        if(unitPreference == unitTypeSaved){
+            formattedDistance = distanceValue+unitPreference
+        }
+        else{
+            formattedDistance = convertDistanceValue(distanceValue, unitTypeSaved)+" "+unitPreference
+        }
+
+
         return formattedDistance
+    }
+
+    private fun convertDistanceValue(distanceValue: String, unitTypeSaved: String):String {
+        var distanceValueDouble = distanceValue.toDouble()
+        if (unitPreference == "km" && unitTypeSaved == "miles"){
+            distanceValueDouble = (distanceValueDouble*1.60934)
+            return distanceValueDouble.toString()
+        }
+        else{
+            distanceValueDouble = (distanceValueDouble*0.621371)
+            return distanceValueDouble.toString()
+        }
+
     }
 
     private fun dateTimeFormatter(dateTime: Long): String {

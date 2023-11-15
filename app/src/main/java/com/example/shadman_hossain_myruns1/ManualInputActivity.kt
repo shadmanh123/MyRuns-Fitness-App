@@ -26,6 +26,7 @@ class ManualInputActivity:AppCompatActivity() {
     private var dateTime: Long? = null
     private var duration: Double? = null
     private var distance: Double? = null
+    private var distanceUnit: String? = null
     private var calories: Double? = null
     private var heartRate: Double? = null
     private var comment: String? = null
@@ -38,6 +39,7 @@ class ManualInputActivity:AppCompatActivity() {
     private lateinit var repository: ExerciseRepository
     private lateinit var exerciseViewModelFactory: ExerciseViewModelFactory
     private lateinit var exerciseViewModel: ExerciseViewModel
+    private lateinit var distanceValueList: List<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +82,7 @@ class ManualInputActivity:AppCompatActivity() {
         getDateTime()
         val exerciseEntry = ExerciseEntry(
             inputType = inputTypeCode, activityType = typeOfActivityCode, dateTime = dateTime,
-            duration = duration, distance = distance, calorie = calories, heartRate = heartRate,
+            duration = duration, distance = distance, distanceUnit = distanceUnit, calorie = calories, heartRate = heartRate,
             comment = comment
         )
         exerciseViewModel.insert(exerciseEntry)
@@ -113,7 +115,8 @@ class ManualInputActivity:AppCompatActivity() {
             duration = data.toDouble()
         }
         else if (dialogType == "Distance"){
-            distance = data.toDouble()
+            distance = extractDistanceValue(data).toDouble()
+            distanceUnit = extractDistanceUnit(data)
         }
         else if (dialogType == "Calories"){
             calories = data.toDouble()
@@ -124,6 +127,16 @@ class ManualInputActivity:AppCompatActivity() {
         else if (dialogType == "Comment"){
             comment = data
         }
+    }
+
+    private fun extractDistanceValue(data: String):String {
+        distanceValueList = data.split(" ")
+        return distanceValueList[0]
+    }
+
+    private fun extractDistanceUnit(data: String):String {
+        distanceValueList = data.split(" ")
+        return distanceValueList[1]
     }
     private fun checkAllValuesSaved(): Boolean {
 
