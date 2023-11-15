@@ -22,9 +22,9 @@ class SettingsFragment: PreferenceFragmentCompat() {
     }
 
     private fun setupDistanceUnitPreference() {
-        var distanceUnitPreference = findPreference<ListPreference>("unit_preference_listview")
+        val distanceUnitPreference = findPreference<ListPreference>("unit_preference_listview")
         distanceUnitPreference?.setOnPreferenceChangeListener { _, newValue ->
-            var unitPreference = newValue.toString()
+            val unitPreference = newValue.toString()
             val unitType: SharedPreferences =
                 requireContext().getSharedPreferences("Unit", AppCompatActivity.MODE_PRIVATE)
             unitType.edit().apply {
@@ -36,7 +36,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
     }
 
     private fun setupWebpagePreference() {
-        var webpage = findPreference<Preference>("webpage")
+        val webpage = findPreference<Preference>("webpage")
         webpage?.setOnPreferenceClickListener {
             classUrl = "https://www.sfu.ca/computing.html"
             intentToBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(classUrl))
@@ -46,7 +46,7 @@ class SettingsFragment: PreferenceFragmentCompat() {
     }
 
     private fun setupProfilePreference() {
-        var profile = findPreference<Preference>("profile")
+        val profile = findPreference<Preference>("profile")
         profile?.setOnPreferenceClickListener {
             intentToProfile = Intent(requireContext(), Profile::class.java)
             startActivity(intentToProfile)

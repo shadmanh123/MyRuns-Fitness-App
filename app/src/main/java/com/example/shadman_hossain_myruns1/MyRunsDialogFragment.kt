@@ -26,7 +26,6 @@ class MyRunsDialogFragment:DialogFragment() {
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
     private lateinit var selectedDate:Calendar
-    private lateinit var distance: String
     private var date: Long? = null
     private var time: Long? = null
     private var data: String? = null

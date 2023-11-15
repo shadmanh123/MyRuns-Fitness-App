@@ -96,7 +96,7 @@ class ActivityEntriesAdapter(private val context: Context, private var entryList
     }
 
     private fun determineUnitTypeSaved(position: Int):String {
-        var unitTypeStored = entryList.get(position).distanceUnit!!
+        val unitTypeStored = entryList.get(position).distanceUnit!!
         if (unitTypeStored == "miles"){
             return "mi"
         }
@@ -108,7 +108,7 @@ class ActivityEntriesAdapter(private val context: Context, private var entryList
 
     private fun getUnitPreference(): String{
         unitType = context.getSharedPreferences("Unit", AppCompatActivity.MODE_PRIVATE)
-        var type = unitType.getString("unitType", "km")
+        val type = unitType.getString("unitType", "km")
         if (type == "miles"){
             return "mi"
         }
