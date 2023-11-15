@@ -74,10 +74,10 @@ class ActivityEntriesAdapter(private val context: Context, private var entryList
         unitPreference = getUnitPreference()
         unitTypeSaved = determineUnitTypeSaved(position)
         if (unitTypeSaved == unitPreference) {
-            formattedDistance = distanceValue + unitPreference
+            formattedDistance = distanceValue + " "+ unitPreference
         }
         else{
-            formattedDistance = convertDistanceValue(distanceValue)
+            formattedDistance = convertDistanceValue(distanceValue) + " " + unitPreference
         }
         distance.text = formattedDistance
     }

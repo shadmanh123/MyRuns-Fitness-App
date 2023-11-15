@@ -108,7 +108,7 @@ class DisplayEntryActivity: AppCompatActivity() {
         val distanceValue = distance.toString()
         unitPreference = getUnitPreference()
         if(unitPreference == unitTypeSaved){
-            formattedDistance = distanceValue+unitPreference
+            formattedDistance = distanceValue+ " " + unitPreference
         }
         else{
             formattedDistance = convertDistanceValue(distanceValue, unitTypeSaved)+" "+unitPreference
