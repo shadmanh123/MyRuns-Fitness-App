@@ -59,7 +59,7 @@ class Profile:AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.profile)
-        Utilities.checkForPermission(this)
+        Utilities.checkForCameraPermission(this)
 
         profilePhoto = findViewById(R.id.ProfilePhoto)
 

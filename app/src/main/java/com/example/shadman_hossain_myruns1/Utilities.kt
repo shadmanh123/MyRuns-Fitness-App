@@ -8,14 +8,29 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 object Utilities {
-    fun checkForPermission(activity: Activity?){
+    fun checkForCameraPermission(activity: Activity?){
         if (ContextCompat.checkSelfPermission(activity!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
             || ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), 0)
+        }
+    }
+
+    fun checkForGPSPermission(activity: Activity?){
+        activity as MapDisplayActivity
+        if (Build.VERSION.SDK_INT < 23){
+            return
+        }
+        if(ContextCompat.checkSelfPermission(activity.applicationContext,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                0
+            )
         }
     }
 
@@ -25,4 +40,5 @@ object Utilities {
         val matrix = Matrix()
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
+
 }
