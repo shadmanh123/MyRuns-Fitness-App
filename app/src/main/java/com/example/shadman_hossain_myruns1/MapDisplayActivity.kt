@@ -5,25 +5,28 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 
-class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener,
-    GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener{
+class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener{
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
     private lateinit var locationManager: LocationManager
-    private var isMapCentered = false
     private lateinit var map: GoogleMap
     private lateinit var markerOptions: MarkerOptions
+    private var startMarker: Marker? = null
+    private var currentMarker: Marker? = null
     private lateinit var polylineOptions: PolylineOptions
     private lateinit var polylineList: ArrayList<Polyline>
 
@@ -42,6 +45,7 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationList
         }
         cancelButton = findViewById(R.id.cancelButton)
         cancelButton.setOnClickListener {
+            removeMarkersAndPolylines()
             finish()
         }
 
@@ -50,55 +54,66 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationList
     override fun onMapReady(googleMap: GoogleMap){
         map = googleMap
         map.mapType = GoogleMap.MAP_TYPE_NORMAL
-        map.setOnMapClickListener(this)
-        map.setOnMapLongClickListener(this)
         polylineOptions = PolylineOptions()
         polylineList = ArrayList()
         markerOptions = MarkerOptions()
+        initializeLocationManager()
     }
+
 
     private fun initializeLocationManager() {
         try {
             locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
-            if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) return
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                if (location != null)
+                    onLocationChanged(location)
 
-            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            if (location != null)
-                onLocationChanged(location)
-
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, this)
-
-        } catch (e: SecurityException) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, this)
+            }
+            return
+        }
+        catch (e: SecurityException){
+            Toast.makeText(this, getString(R.string.grant_permission_message), Toast.LENGTH_LONG).show()
         }
     }
 
-    override fun onLocationChanged(location: Location) {
+    private fun getLatLang(location: Location): LatLng {
         val latitude = location.latitude
         val longitude = location.longitude
-        val latLng = LatLng(latitude,longitude)
-        if(!isMapCentered){
-            val updateCamera = CameraUpdateFactory.newLatLng(latLng)
-            map.animateCamera(updateCamera)
-            markerOptions.position(latLng)
-            map.addMarker(markerOptions)
-            polylineOptions.add(latLng)
-            isMapCentered = true
-        }
+        return LatLng(latitude,longitude)
+    }
+    private fun centerCamera(latLng: LatLng){
+        val updateCamera = CameraUpdateFactory.newLatLng(latLng)
+        map.animateCamera(updateCamera)
     }
 
-    override fun onMapClick(latLng: LatLng) {
+    private fun setMarkerAndPolyline(latLng: LatLng){
+        if (polylineList.size == 0){
+            startMarker = map.addMarker(MarkerOptions().position(latLng).title("Start"))
+        }
+        else{
+            currentMarker?.remove()
+            currentMarker = map.addMarker(MarkerOptions().position(latLng))
+        }
+        polylineOptions.add(latLng)
+        polylineList.add(map.addPolyline(polylineOptions))
+        Log.d("MapDisplayActivity", "Marker added at: $latLng")
+    }
+
+    private fun removeMarkersAndPolylines(){
         for(i in polylineList.indices){
             polylineList[i].remove()
         }
         polylineOptions.points.clear()
+        map.clear()
     }
 
-    override fun onMapLongClick(latLng: LatLng) {
-        markerOptions.position(latLng!!)
-        map.addMarker(markerOptions)
-        polylineOptions.add(latLng)
-        polylineList.add(map.addPolyline(polylineOptions))
+    override fun onLocationChanged(location: Location) {
+        val latLng = getLatLang(location)
+        centerCamera(latLng)
+        setMarkerAndPolyline(latLng)
     }
 
     override fun onDestroy() {

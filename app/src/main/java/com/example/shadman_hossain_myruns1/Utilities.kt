@@ -20,10 +20,10 @@ object Utilities {
         }
     }
 
-    fun checkForGPSPermission(activity: Activity?){
+    fun checkForGPSPermission(activity: Activity?): Boolean{
         activity as MapDisplayActivity
         if (Build.VERSION.SDK_INT < 23){
-            return
+            return true
         }
         if(ContextCompat.checkSelfPermission(activity.applicationContext,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
@@ -31,7 +31,9 @@ object Utilities {
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 0
             )
+            return false
         }
+        return true
     }
 
     fun getBitMap(context: Context, imgUri: Uri): Bitmap {

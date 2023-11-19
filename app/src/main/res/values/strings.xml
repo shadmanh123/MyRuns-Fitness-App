@@ -89,5 +89,6 @@
     <string name="select_profile_image">Select Profile Picture</string>
     <string name="date_and_time">Date and Time</string>
     <string name="delete">Delete</string>
+    <string name="grant_permission_message">Need permission to access GPS coordinates. Please go to mobile settings and allow permission for this app</string>
 
 </resources>
