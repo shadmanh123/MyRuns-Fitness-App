@@ -1,2 +1,2 @@
 Hello,
-I got implementation ideas for database from the lecture.
+MET values obtained from: https://golf.procon.org/met-values-for-800-activities/
