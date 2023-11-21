@@ -43,6 +43,10 @@ class MapViewModel(): ViewModel(), ServiceConnection {
     private val _locationMarkersLatlng = MutableLiveData<LatLng>()
     private var updateHandler: MyUpdateHandler
     private var binder: TrackingService.MyBinder? = null
+    private var exerciseEntry: ExerciseEntry? = null
+    private val _exerciseEntry = MutableLiveData<ExerciseEntry>()
+    val exerciseEntryLiveData: LiveData<ExerciseEntry>
+        get() = _exerciseEntry
     val statsText: LiveData<String>
         get() = _statsText
 
@@ -92,6 +96,7 @@ class MapViewModel(): ViewModel(), ServiceConnection {
                 startMarkerLongitude = bundle.getDouble(TrackingService.startMarkerLongitudeKey)
                 currentMarkerLatitude = bundle.getDouble(TrackingService.currentMarkerLatitudeKey)
                 currentMarkerLongitude = bundle.getDouble(TrackingService.currentMarkerLongitudeKey)
+                exerciseEntry = bundle.getParcelable(TrackingService.exerciseEntryKey)
                 updateStats()
                 updateMarkers()
             }

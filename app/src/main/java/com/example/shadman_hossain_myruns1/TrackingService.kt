@@ -34,6 +34,7 @@ class TrackingService: android.app.Service(), LocationListener {
     private lateinit var myTask: MyTask
     private lateinit var locationManager: LocationManager
     private lateinit var location: Location
+    private lateinit var locationList: ArrayList<LatLng>
     private var speedList: ArrayList<Double> = ArrayList()
     private var avgSpeed: Double? = null
     private var currentSpeed: Double? = null
@@ -43,7 +44,7 @@ class TrackingService: android.app.Service(), LocationListener {
     private var calories: Double? = null
     private var met: Double? = null
     private var distance: Double? = null
-    private lateinit var dateTime: Calendar
+    private var dateTime: Long? = null
     private var duration: Double? = null
     private var startTimeMillis: Long? = null
     private var currentTimeMillis: Long? = null
@@ -58,6 +59,7 @@ class TrackingService: android.app.Service(), LocationListener {
     private var currentMarkerLongitude: Double? = null
     private var typeOfActivityCode = -1
     private lateinit var timer: Timer
+    private var exerciseEntry: ExerciseEntry? = null
 
     companion object{
         const val startMarkerLatitudeKey = "startMarkerLatitudeKey"
@@ -73,12 +75,14 @@ class TrackingService: android.app.Service(), LocationListener {
         const val STOP_TRACKING_SERVICE = "stop tracking service"
         const val NOTIFY_ID = 11
         const val CHANNEL_ID = "notification channel"
+        const val exerciseEntryKey = "exerciseEntryKey"
     }
 
     override fun onCreate() {
         super.onCreate()
         myTask = MyTask()
         timer = Timer()
+        locationList = ArrayList()
         timer.scheduleAtFixedRate(myTask, 0, 1000L)
         myBinder = MyBinder()
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -182,6 +186,7 @@ class TrackingService: android.app.Service(), LocationListener {
                     stopSelf()
                 }
                 initializeLocationManager()
+                updateExerciseEntry()
 
                 if(updateHandler != null){
                     val bundle = Bundle()
@@ -194,6 +199,7 @@ class TrackingService: android.app.Service(), LocationListener {
                     bundle.putDouble(startMarkerLongitudeKey, startMarkerLongitude!!)
                     bundle.putDouble(currentMarkerLatitudeKey, currentMarkerLatitude!!)
                     bundle.putDouble(currentMarkerLongitudeKey, currentMarkerLongitude!!)
+                    bundle.putParcelable(exerciseEntryKey, exerciseEntry)
                     val update = updateHandler!!.obtainMessage()
                     update.data = bundle
                     update.what = UPDATE_INT_VALUE
@@ -253,6 +259,7 @@ class TrackingService: android.app.Service(), LocationListener {
 
     private fun getMarkers(location: Location){
         val latLng = getLatLang(location)
+        locationList.add(latLng)
         getLatLangSeperate(location)
         if (startMarkerPosition == null){
             startMarkerPosition = latLng
@@ -325,6 +332,48 @@ class TrackingService: android.app.Service(), LocationListener {
         else{
             return 0.00
         }
+    }
+    private fun updateExerciseEntry(){
+        getDateTime()
+        if(exerciseEntry == null) {
+            exerciseEntry = ExerciseEntry(
+                inputType = typeOfActivityCode,
+                activityType = typeOfActivityCode,
+                dateTime = dateTime,
+                duration = duration,
+                distance = distance,
+                distanceUnit = type,
+                avgSpeed = avgSpeed,
+                calorie = calories,
+                climb = climb,
+                locationList = locationList
+            )
+        }
+        else{
+            exerciseEntry?.apply {
+                this.duration = duration
+                this.distance = distance
+                this.avgSpeed = avgSpeed
+                this.calorie = calorie
+                this.climb = climb
+                this.locationList = locationList
+            }
+        }
+    }
+    private fun getDateTime() {
+        val dateCalendar = Calendar.getInstance()
+//        dateCalendar.timeInMillis = date!!
+        val timeCalendar = Calendar.getInstance()
+//        timeCalendar.timeInMillis = time!!
+        val year = dateCalendar.get(Calendar.YEAR)
+        val month = dateCalendar.get(Calendar.MONTH)
+        val day = dateCalendar.get(Calendar.DAY_OF_MONTH)
+        val hour = timeCalendar.get(Calendar.HOUR_OF_DAY)
+        val minute = timeCalendar.get(Calendar.MINUTE)
+        val seconds = timeCalendar.get(Calendar.SECOND)
+        val dateTimeCalendar = Calendar.getInstance()
+        dateTimeCalendar.set(year, month, day, hour, minute, seconds)
+        dateTime = dateTimeCalendar.timeInMillis
     }
 
     private fun checkMetValue(typeOfActivityCode: Int){

@@ -50,6 +50,7 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
     private lateinit var repository: ExerciseRepository
     private lateinit var exerciseViewModelFactory: ExerciseViewModelFactory
     private lateinit var exerciseViewModel: ExerciseViewModel
+    private var exerciseEntry: ExerciseEntry? = null
 
 
 
@@ -71,7 +72,13 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
         exerciseViewModel = ViewModelProvider(this, exerciseViewModelFactory).get(ExerciseViewModel::class.java)
         saveButton = findViewById(R.id.saveButton)
         saveButton.setOnClickListener {
-            finish()
+            if (exerciseEntry == null) {
+                finish()
+            }
+            else{
+                saveToExerciseDatabase()
+                finish()
+            }
         }
         cancelButton = findViewById(R.id.cancelButton)
         cancelButton.setOnClickListener {
@@ -91,6 +98,9 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
             setMarkerAndPolyline(markerValues)
         }
         )
+        mapViewModel.exerciseEntryLiveData.observe(this, { entry ->
+            exerciseEntry = entry
+        })
         if (savedInstanceState != null){
             isBind = savedInstanceState.getBoolean(BIND_STATUS_KEY)
         }
@@ -185,7 +195,7 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
     }
 
     private fun saveToExerciseDatabase(){
-
+        exerciseViewModel.insert(exerciseEntry!!)
     }
 
     override fun onRequestPermissionsResult(
