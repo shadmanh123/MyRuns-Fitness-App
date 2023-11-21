@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-feature android:name="android.hardware.camera"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -50,6 +51,10 @@
         <activity android:name=".ManualInputActivity"/>
         <activity android:name=".MapDisplayActivity"/>
         <activity android:name=".DisplayEntryActivity"/>
+        <service
+            android:name=".TrackingService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

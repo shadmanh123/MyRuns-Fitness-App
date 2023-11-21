@@ -1,15 +1,14 @@
 package com.example.shadman_hossain_myruns1
 
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -22,7 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 
-class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener{
+class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
     private lateinit var stats: TextView
@@ -36,12 +35,23 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationList
     private var currentMarker: Marker? = null
     private lateinit var polylineOptions: PolylineOptions
     private lateinit var polylineList: ArrayList<Polyline>
-    private lateinit var speedList: ArrayList<Double>
     private var startTimeMillis: Long? = null
     private lateinit var locationList: ArrayList<LatLng>
     private lateinit var unitType: SharedPreferences
     private var type: String? = null
     private lateinit var mapViewModel: MapViewModel
+    private lateinit var serviceIntent: Intent
+    private var isBind = false
+    private val BIND_STATUS_KEY = "bind_status_key"
+    private lateinit var backPressedCallback: OnBackPressedCallback
+    private lateinit var appContext: Context
+    private lateinit var database: ExerciseDatabase
+    private lateinit var databaseDao: ExerciseDatabaseDao
+    private lateinit var repository: ExerciseRepository
+    private lateinit var exerciseViewModelFactory: ExerciseViewModelFactory
+    private lateinit var exerciseViewModel: ExerciseViewModel
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +59,16 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationList
         typeOfActivityCode = intent.getIntExtra("activityCode", -1)
         typeOfActivityName = intent.getStringExtra("activityName")
         entryKey = intent.getIntExtra("entryKey", -1)
+        appContext = this.applicationContext
+        getUnitType()
         Utilities.checkForGPSPermission(this)
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        speedList = ArrayList()
+        database = ExerciseDatabase.getInstance(this)
+        databaseDao = database.exerciseDatabaseDao
+        repository = ExerciseRepository(databaseDao)
+        exerciseViewModelFactory = ExerciseViewModelFactory(repository)
+        exerciseViewModel = ViewModelProvider(this, exerciseViewModelFactory).get(ExerciseViewModel::class.java)
         saveButton = findViewById(R.id.saveButton)
         saveButton.setOnClickListener {
             finish()
@@ -60,17 +76,72 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationList
         cancelButton = findViewById(R.id.cancelButton)
         cancelButton.setOnClickListener {
             removeMarkersAndPolylines()
+            unBindService()
+            stopService(serviceIntent)
             finish()
         }
         stats = findViewById(R.id.stats)
         mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
-        mapViewModel.getActivityCode(typeOfActivityCode)
         mapViewModel.getActivityName(typeOfActivityName)
-        getUnitType()
-        mapViewModel.getType(type)
         mapViewModel.statsText.observe(this, {statsTV ->
             stats.text = statsTV
         })
+        mapViewModel.markersLatlng.observe(this, { markerValues ->
+            centerCamera(markerValues)
+            setMarkerAndPolyline(markerValues)
+        }
+        )
+        if (savedInstanceState != null){
+            isBind = savedInstanceState.getBoolean(BIND_STATUS_KEY)
+        }
+        startTrackingService(typeOfActivityCode, type!!)
+
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                println("debug: back button pressed")
+                unBindService()
+                stopService(serviceIntent)
+                isEnabled = false
+                finish()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, backPressedCallback)
+    }
+
+    private fun startTrackingService(activityCode: Int, type: String){
+        if (!isBind) {
+            serviceIntent = Intent(this, TrackingService::class.java).apply {
+                putExtra("activityCode", activityCode)
+                putExtra("type", type)
+            }
+            bindService()
+            startService(serviceIntent)
+        }
+    }
+
+    private fun bindService() {
+        if (!isBind) {
+            appContext.bindService(serviceIntent, mapViewModel, BIND_AUTO_CREATE)
+            isBind = true
+        }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        backPressedCallback.remove()
+        unBindService()
+        stopService(serviceIntent)
+    }
+
+    private fun unBindService() {
+        if (isBind) {
+            appContext.unbindService(mapViewModel)
+            isBind = false
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(BIND_STATUS_KEY, isBind)
     }
 
     override fun onMapReady(googleMap: GoogleMap){
@@ -80,32 +151,6 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationList
         polylineList = ArrayList()
         locationList = ArrayList()
         markerOptions = MarkerOptions()
-        initializeLocationManager()
-    }
-
-
-    private fun initializeLocationManager() {
-        try {
-            locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
-
-            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                if (location != null)
-                    onLocationChanged(location)
-
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, this)
-            }
-            return
-        }
-        catch (e: SecurityException){
-            Toast.makeText(this, getString(R.string.grant_permission_message), Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun getLatLang(location: Location): LatLng {
-        val latitude = location.latitude
-        val longitude = location.longitude
-        return LatLng(latitude,longitude)
     }
     private fun centerCamera(latLng: LatLng){
         val updateCamera = CameraUpdateFactory.newLatLng(latLng)
@@ -124,7 +169,6 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationList
         polylineOptions.add(latLng)
         locationList.add(latLng)
         polylineList.add(map.addPolyline(polylineOptions))
-        Log.d("MapDisplayActivity", "Marker added at: $latLng")
     }
 
     private fun removeMarkersAndPolylines(){
@@ -135,24 +179,13 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationList
         map.clear()
     }
 
-    override fun onLocationChanged(location: Location) {
-        val latLng = getLatLang(location)
-        centerCamera(latLng)
-        setMarkerAndPolyline(latLng)
-        mapViewModel.getLocation(location)
-        mapViewModel.getMarkers(startMarker, currentMarker)
-    }
-
     private fun getUnitType(){
         unitType = this.getSharedPreferences("Unit", AppCompatActivity.MODE_PRIVATE)
         type = unitType.getString("unitType", "km")
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if(locationManager != null){
-            locationManager.removeUpdates(this)
-        }
+    private fun saveToExerciseDatabase(){
+
     }
 
     override fun onRequestPermissionsResult(
@@ -163,7 +196,7 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback, LocationList
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if(requestCode == 0){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                initializeLocationManager()
+                startTrackingService(typeOfActivityCode, type!!)
             }
         }
     }
