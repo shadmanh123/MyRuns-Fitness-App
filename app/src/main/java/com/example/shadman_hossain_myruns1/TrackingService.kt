@@ -3,7 +3,6 @@ package com.example.shadman_hossain_myruns1
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
@@ -26,14 +25,12 @@ import kotlin.math.sqrt
 
 class TrackingService: android.app.Service(), LocationListener {
     private lateinit var myBinder: Binder
-    private lateinit var myBroadcastReceiver: BroadcastReceiver
     private lateinit var notificationManager: NotificationManager
     private var isTracking = true
     private lateinit var pendingIntent: PendingIntent
     private var updateHandler: Handler? = null
     private lateinit var myTask: MyTask
     private lateinit var locationManager: LocationManager
-    private lateinit var location: Location
     private lateinit var locationList: ArrayList<LatLng>
     private var speedList: ArrayList<Double> = ArrayList()
     private var avgSpeed: Double? = null
@@ -58,6 +55,7 @@ class TrackingService: android.app.Service(), LocationListener {
     private var currentMarkerLatitude: Double? = null
     private var currentMarkerLongitude: Double? = null
     private var typeOfActivityCode = -1
+    private var typeOfInputValue = -1
     private lateinit var timer: Timer
     private var exerciseEntry: ExerciseEntry? = null
 
@@ -76,6 +74,7 @@ class TrackingService: android.app.Service(), LocationListener {
         const val NOTIFY_ID = 11
         const val CHANNEL_ID = "notification channel"
         const val exerciseEntryKey = "exerciseEntryKey"
+        const val typeKey = "typeKey"
     }
 
     override fun onCreate() {
@@ -93,6 +92,7 @@ class TrackingService: android.app.Service(), LocationListener {
         if (intent != null && intent.hasExtra("activityCode") && intent.hasExtra("type")){
             typeOfActivityCode = intent.getIntExtra("activityCode", -1)
             type = intent.getStringExtra("type")
+            typeOfInputValue = intent.getIntExtra("inputTypeValue", -1)
         }
         return START_NOT_STICKY
     }
@@ -200,6 +200,7 @@ class TrackingService: android.app.Service(), LocationListener {
                     bundle.putDouble(currentMarkerLatitudeKey, currentMarkerLatitude!!)
                     bundle.putDouble(currentMarkerLongitudeKey, currentMarkerLongitude!!)
                     bundle.putParcelable(exerciseEntryKey, exerciseEntry)
+                    bundle.putString(typeKey, type)
                     val update = updateHandler!!.obtainMessage()
                     update.data = bundle
                     update.what = UPDATE_INT_VALUE
@@ -337,7 +338,7 @@ class TrackingService: android.app.Service(), LocationListener {
         getDateTime()
         if(exerciseEntry == null) {
             exerciseEntry = ExerciseEntry(
-                inputType = typeOfActivityCode,
+                inputType = typeOfInputValue,
                 activityType = typeOfActivityCode,
                 dateTime = dateTime,
                 duration = duration,

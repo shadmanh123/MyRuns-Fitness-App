@@ -57,6 +57,7 @@ class StartFragment:Fragment() {
                 intentToMapDisplayActivity = Intent(requireContext(), MapDisplayActivity::class.java)
                 intentToMapDisplayActivity.putExtra("activityCode", activityCode)
                 intentToMapDisplayActivity.putExtra("activityName", activity)
+                intentToMapDisplayActivity.putExtra("inputTypeValue", inputTypeValue)
                 startActivity(intentToMapDisplayActivity)
             }
         }

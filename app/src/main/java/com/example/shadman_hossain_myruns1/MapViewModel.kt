@@ -67,15 +67,19 @@ class MapViewModel(): ViewModel(), ServiceConnection {
 
     private fun updateStats(){
         _statsText.value = "Activity Type: $typeOfActivityName \n" +
-                "Average Speed: $avgSpeed \n" +
-                "Current Speed: $currentSpeed \n" +
-                "Climb: $climb \n" +
+                "Average Speed: $avgSpeed $type/h \n" +
+                "Current Speed: $currentSpeed $type/h \n" +
+                "Climb: $climb $type\n" +
                 "Calories: $calories \n" +
-                "Distance: $distance"
+                "Distance: $distance $type"
     }
 
     private fun updateMarkers(){
         _locationMarkersLatlng.value = LatLng(currentMarkerLatitude!!,currentMarkerLongitude!!)
+    }
+
+    private fun updateExerciseEntry(){
+        _exerciseEntry.value = exerciseEntry!!
     }
 
     fun getActivityName(name: String?){
@@ -97,8 +101,10 @@ class MapViewModel(): ViewModel(), ServiceConnection {
                 currentMarkerLatitude = bundle.getDouble(TrackingService.currentMarkerLatitudeKey)
                 currentMarkerLongitude = bundle.getDouble(TrackingService.currentMarkerLongitudeKey)
                 exerciseEntry = bundle.getParcelable(TrackingService.exerciseEntryKey)
+                type = bundle.getString(TrackingService.typeKey)
                 updateStats()
                 updateMarkers()
+                updateExerciseEntry()
             }
         }
     }

@@ -20,14 +20,16 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
+import java.util.concurrent.CompletableFuture
 
 class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
-    private lateinit var saveButton: Button
+    private lateinit var saveOrDeleteButton: Button
     private lateinit var cancelButton: Button
     private lateinit var stats: TextView
     private var typeOfActivityCode = -1
     private var typeOfActivityName: String? = null
-    private var entryKey = -1
+    private var typeOfInputValue = -1
+    private var entryKey = -1L
     private lateinit var locationManager: LocationManager
     private lateinit var map: GoogleMap
     private lateinit var markerOptions: MarkerOptions
@@ -51,6 +53,8 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
     private lateinit var exerciseViewModelFactory: ExerciseViewModelFactory
     private lateinit var exerciseViewModel: ExerciseViewModel
     private var exerciseEntry: ExerciseEntry? = null
+    private var activityToDisplay: ExerciseEntry? = null
+    private lateinit var activity: String
 
 
 
@@ -59,38 +63,101 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
         setContentView(R.layout.map_display)
         typeOfActivityCode = intent.getIntExtra("activityCode", -1)
         typeOfActivityName = intent.getStringExtra("activityName")
-        entryKey = intent.getIntExtra("entryKey", -1)
+        typeOfInputValue = intent.getIntExtra("inputTypeValue", -1)
+        entryKey = intent.getLongExtra("entryKey", -1L)
         appContext = this.applicationContext
         getUnitType()
         Utilities.checkForGPSPermission(this)
+        stats = findViewById(R.id.stats)
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        establishExerciseDatabase()
+        saveOrDeleteButton = findViewById(R.id.saveButton)
+        cancelButton = findViewById(R.id.cancelButton)
+        if (entryKey == -1L) {
+            saveOrDeleteButton.setOnClickListener {
+                if (exerciseEntry == null) {
+                    finish()
+                } else {
+                    saveToExerciseDatabase()
+                    finish()
+                }
+            }
+            cancelButton.setOnClickListener {
+                removeMarkersAndPolylines()
+                unBindService()
+                stopService(serviceIntent)
+                finish()
+            }
+            stats = findViewById(R.id.stats)
+            mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
+            mapViewModel.getActivityName(typeOfActivityName)
+            observeMapViewModel()
+            if (savedInstanceState != null) {
+                isBind = savedInstanceState.getBoolean(BIND_STATUS_KEY)
+            }
+            startTrackingService(typeOfActivityCode, type!!, typeOfInputValue!!)
+
+            backPressedCallback = object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    println("debug: back button pressed")
+                    unBindService()
+                    stopService(serviceIntent)
+                    isEnabled = false
+                    finish()
+                }
+            }
+            onBackPressedDispatcher.addCallback(this, backPressedCallback)
+        }
+        else {
+            saveOrDeleteButton.text = "Delete"
+            saveOrDeleteButton.setOnClickListener {
+                exerciseViewModel.delete(entryKey)
+                finish()
+            }
+
+            cancelButton.setOnClickListener {
+                finish()
+            }
+        }
+    }
+
+    private fun loadExerciseEntry() {
+        activityToDisplay = getActivitytoDisplay(entryKey)
+        val activityResult = checkActivityType(activityToDisplay!!.activityType!!.toInt())
+        stats.text = "Activity Type: $activityResult \n" +
+                "Average Speed: ${activityToDisplay!!.avgSpeed} ${activityToDisplay!!.distanceUnit}/h \n" +
+                "Current Speed: 0 ${activityToDisplay!!.distanceUnit}/h \n" +
+                "Climb: ${activityToDisplay!!.climb} ${activityToDisplay!!.distanceUnit}\n" +
+                "Calories: ${activityToDisplay!!.calorie} \n" +
+                "Distance: ${activityToDisplay!!.distance} ${activityToDisplay!!.distanceUnit}"
+        locationList = activityToDisplay!!.locationList!!
+        for (item in locationList) {
+            centerCamera(item)
+            setMarkerAndPolyline(item)
+        }
+    }
+
+    private fun establishExerciseDatabase() {
         database = ExerciseDatabase.getInstance(this)
         databaseDao = database.exerciseDatabaseDao
         repository = ExerciseRepository(databaseDao)
         exerciseViewModelFactory = ExerciseViewModelFactory(repository)
-        exerciseViewModel = ViewModelProvider(this, exerciseViewModelFactory).get(ExerciseViewModel::class.java)
-        saveButton = findViewById(R.id.saveButton)
-        saveButton.setOnClickListener {
-            if (exerciseEntry == null) {
-                finish()
-            }
-            else{
-                saveToExerciseDatabase()
-                finish()
-            }
-        }
-        cancelButton = findViewById(R.id.cancelButton)
-        cancelButton.setOnClickListener {
-            removeMarkersAndPolylines()
-            unBindService()
-            stopService(serviceIntent)
-            finish()
-        }
-        stats = findViewById(R.id.stats)
-        mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
-        mapViewModel.getActivityName(typeOfActivityName)
-        mapViewModel.statsText.observe(this, {statsTV ->
+        exerciseViewModel =
+            ViewModelProvider(this, exerciseViewModelFactory).get(ExerciseViewModel::class.java)
+    }
+
+    private fun getActivitytoDisplay(entryKey: Long): ExerciseEntry?{
+        val exerciseActivityFuture = CompletableFuture<ExerciseEntry>()
+        Thread{
+            val threadExerciseActivity = exerciseViewModel.getEntryByID(entryKey) as ExerciseEntry
+            exerciseActivityFuture.complete(threadExerciseActivity)
+        }.start()
+        return exerciseActivityFuture.get()
+    }
+
+    private fun observeMapViewModel() {
+        mapViewModel.statsText.observe(this, { statsTV ->
             stats.text = statsTV
         })
         mapViewModel.markersLatlng.observe(this, { markerValues ->
@@ -101,28 +168,14 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
         mapViewModel.exerciseEntryLiveData.observe(this, { entry ->
             exerciseEntry = entry
         })
-        if (savedInstanceState != null){
-            isBind = savedInstanceState.getBoolean(BIND_STATUS_KEY)
-        }
-        startTrackingService(typeOfActivityCode, type!!)
-
-        backPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                println("debug: back button pressed")
-                unBindService()
-                stopService(serviceIntent)
-                isEnabled = false
-                finish()
-            }
-        }
-        onBackPressedDispatcher.addCallback(this, backPressedCallback)
     }
 
-    private fun startTrackingService(activityCode: Int, type: String){
+    private fun startTrackingService(activityCode: Int, type: String, inputTypeValue: Int){
         if (!isBind) {
             serviceIntent = Intent(this, TrackingService::class.java).apply {
                 putExtra("activityCode", activityCode)
                 putExtra("type", type)
+                putExtra("inputTypeValue", inputTypeValue)
             }
             bindService()
             startService(serviceIntent)
@@ -137,9 +190,11 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
     }
     override fun onDestroy() {
         super.onDestroy()
-        backPressedCallback.remove()
-        unBindService()
-        stopService(serviceIntent)
+        if (entryKey == -1L) {
+            backPressedCallback.remove()
+            unBindService()
+            stopService(serviceIntent)
+        }
     }
 
     private fun unBindService() {
@@ -157,10 +212,18 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
     override fun onMapReady(googleMap: GoogleMap){
         map = googleMap
         map.mapType = GoogleMap.MAP_TYPE_NORMAL
-        polylineOptions = PolylineOptions()
-        polylineList = ArrayList()
-        locationList = ArrayList()
-        markerOptions = MarkerOptions()
+        if(entryKey != -1L){
+            polylineOptions = PolylineOptions()
+            polylineList = ArrayList()
+            markerOptions = MarkerOptions()
+            loadExerciseEntry()
+        }
+        else {
+            polylineOptions = PolylineOptions()
+            polylineList = ArrayList()
+            locationList = ArrayList()
+            markerOptions = MarkerOptions()
+        }
     }
     private fun centerCamera(latLng: LatLng){
         val updateCamera = CameraUpdateFactory.newLatLng(latLng)
@@ -171,14 +234,22 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
         if (polylineList.size == 0){
             startMarker = map.addMarker(MarkerOptions().position(latLng).title("Start"))
             startTimeMillis = System.currentTimeMillis()
+            polylineOptions.add(latLng)
+            polylineList.add(map.addPolyline(polylineOptions))
+            if (entryKey == -1L){
+                locationList.add(latLng)
+            }
         }
         else{
             currentMarker?.remove()
             currentMarker = map.addMarker(MarkerOptions().position(latLng))
+            polylineOptions.add(latLng)
+            polylineList.add(map.addPolyline(polylineOptions))
+            if (entryKey == -1L){
+                locationList.add(latLng)
+            }
         }
-        polylineOptions.add(latLng)
-        locationList.add(latLng)
-        polylineList.add(map.addPolyline(polylineOptions))
+
     }
 
     private fun removeMarkersAndPolylines(){
@@ -195,6 +266,7 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
     }
 
     private fun saveToExerciseDatabase(){
+//        Log.d("MapDisplayActivity", "Save exercise to db")
         exerciseViewModel.insert(exerciseEntry!!)
     }
 
@@ -206,8 +278,54 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if(requestCode == 0){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                startTrackingService(typeOfActivityCode, type!!)
+                startTrackingService(typeOfActivityCode, type!!, typeOfInputValue)
             }
         }
+    }
+
+    private fun checkActivityType(activityTypeCode: Int): String {
+        if (activityTypeCode == 0){
+            activity = "Runnning"
+        }
+        else if (activityTypeCode == 1){
+            activity = "Walking"
+        }
+        else if (activityTypeCode == 2){
+            activity = "Standing"
+        }
+        else if (activityTypeCode == 3){
+            activity = "Cycling"
+        }
+        else if (activityTypeCode == 4){
+            activity = "Hiking"
+        }
+        else if (activityTypeCode == 5){
+            activity = "Downhill Skiing"
+        }
+        else if (activityTypeCode == 6){
+            activity = "Cross-Country Skiing"
+        }
+        else if (activityTypeCode == 7){
+            activity = "Snowboarding"
+        }
+        else if (activityTypeCode == 8){
+            activity = "Skating"
+        }
+        else if (activityTypeCode == 9){
+            activity = "Swimming"
+        }
+        else if (activityTypeCode == 10){
+            activity = "Mountain Biking"
+        }
+        else if (activityTypeCode == 11){
+            activity = "Wheelchair"
+        }
+        else if (activityTypeCode == 12){
+            activity = "Elliptical"
+        }
+        else if (activityTypeCode == 13){
+            activity = "Other"
+        }
+        return activity
     }
 }
