@@ -67,7 +67,7 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
         entryKey = intent.getLongExtra("entryKey", -1L)
         appContext = this.applicationContext
         getUnitType()
-        Utilities.checkForGPSPermission(this)
+//        Utilities.checkForGPSPermission(this)
         stats = findViewById(R.id.stats)
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
