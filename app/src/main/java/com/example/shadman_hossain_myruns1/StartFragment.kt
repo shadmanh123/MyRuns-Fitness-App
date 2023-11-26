@@ -63,8 +63,10 @@ class StartFragment:Fragment() {
         }
 
         else{
-            var inputTypeValue: Int = 1
-            //TODO response to Automatic
+            var inputTypeValue: Int = 3
+            intentToMapDisplayActivity = Intent(requireContext(),MapDisplayActivity::class.java)
+            intentToMapDisplayActivity.putExtra("inputTypeCode", inputTypeValue)
+            startActivity(intentToMapDisplayActivity)
         }
     }
     private fun getActivityTypeCode(activityType:String):Int{
