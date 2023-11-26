@@ -157,7 +157,7 @@ class TrackingService: android.app.Service(), LocationListener {
     private fun showNotification(){
         val intent = Intent(this, MapDisplayActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE)
 
         val notificationBuilder: NotificationCompat.Builder = NotificationCompat.Builder(
             this,

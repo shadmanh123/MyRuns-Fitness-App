@@ -2,15 +2,16 @@ package com.example.shadman_hossain_myruns1
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import java.lang.Math.floor
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.math.floor
 
 class ActivityEntriesAdapter(private val context: Context, private var entryList: List<ExerciseEntry>):
     BaseAdapter() {
@@ -58,6 +59,7 @@ class ActivityEntriesAdapter(private val context: Context, private var entryList
 
     private fun durationFormat(position: Int) {
         durationValue = entryList.get(position).duration.toString()
+        Log.d("Activity Entries Adapter", "Duration Value $durationValue")
         if(durationValue.toDouble() > 60){
             val hours = floor(durationValue.toDouble()/60)
             val minutes = durationValue.toDouble() - 60*hours
