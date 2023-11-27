@@ -61,20 +61,52 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.map_display)
-        typeOfActivityCode = intent.getIntExtra("activityCode", -1)
-        typeOfActivityName = intent.getStringExtra("activityName")
-        typeOfInputValue = intent.getIntExtra("inputTypeValue", -1)
         entryKey = intent.getLongExtra("entryKey", -1L)
         appContext = this.applicationContext
         getUnitType()
         Utilities.checkForGPSPermission(this)
         stats = findViewById(R.id.stats)
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
         establishExerciseDatabase()
+        mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
+
         saveOrDeleteButton = findViewById(R.id.saveButton)
         cancelButton = findViewById(R.id.cancelButton)
-        if (entryKey == -1L) {
+        buttonFunctionality()
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                println("debug: back button pressed")
+                unBindService()
+                stopService(serviceIntent)
+                isEnabled = false
+                finish()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, backPressedCallback)
+        typeOfInputValue = intent.getIntExtra("inputTypeValue", -1)
+        if (typeOfInputValue == 3) {
+            automaticModeActivities(savedInstanceState)
+        }
+        else{
+            gpsModeActivities(savedInstanceState)
+        }
+    }
+
+    private fun buttonFunctionality() {
+        if (entryKey != -1L) {
+            saveOrDeleteButton.text = "Delete"
+            saveOrDeleteButton.setOnClickListener {
+                exerciseViewModel.delete(entryKey)
+                finish()
+            }
+
+            cancelButton.setOnClickListener {
+                finish()
+            }
+        }
+        else{
             saveOrDeleteButton.setOnClickListener {
                 if (exerciseEntry == null) {
                     finish()
@@ -89,37 +121,27 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
                 stopService(serviceIntent)
                 finish()
             }
-            stats = findViewById(R.id.stats)
-            mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
-            mapViewModel.getActivityName(typeOfActivityName)
-            observeMapViewModel()
-            if (savedInstanceState != null) {
-                isBind = savedInstanceState.getBoolean(BIND_STATUS_KEY)
-            }
-            startTrackingService(typeOfActivityCode, type!!, typeOfInputValue!!)
-
-            backPressedCallback = object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    println("debug: back button pressed")
-                    unBindService()
-                    stopService(serviceIntent)
-                    isEnabled = false
-                    finish()
-                }
-            }
-            onBackPressedDispatcher.addCallback(this, backPressedCallback)
         }
-        else {
-            saveOrDeleteButton.text = "Delete"
-            saveOrDeleteButton.setOnClickListener {
-                exerciseViewModel.delete(entryKey)
-                finish()
-            }
+    }
 
-            cancelButton.setOnClickListener {
-                finish()
-            }
+    private fun automaticModeActivities(savedInstanceState: Bundle?) {
+        mapViewModel.getActivityName("Deciding")
+        observeMapViewModel()
+        if (savedInstanceState != null) {
+            isBind = savedInstanceState.getBoolean(BIND_STATUS_KEY)
         }
+        startTrackingService(typeOfActivityCode, type!!, typeOfInputValue)
+    }
+
+    private fun gpsModeActivities(savedInstanceState: Bundle?) {
+        typeOfActivityCode = intent.getIntExtra("activityCode", -1)
+        typeOfActivityName = intent.getStringExtra("activityName")
+        mapViewModel.getActivityName(typeOfActivityName)
+        observeMapViewModel()
+        if (savedInstanceState != null) {
+            isBind = savedInstanceState.getBoolean(BIND_STATUS_KEY)
+        }
+        startTrackingService(typeOfActivityCode, type!!, typeOfInputValue)
     }
 
     private fun loadExerciseEntry() {

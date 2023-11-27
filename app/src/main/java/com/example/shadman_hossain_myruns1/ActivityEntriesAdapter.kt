@@ -2,7 +2,6 @@ package com.example.shadman_hossain_myruns1
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -59,7 +58,7 @@ class ActivityEntriesAdapter(private val context: Context, private var entryList
 
     private fun durationFormat(position: Int) {
         durationValue = entryList.get(position).duration.toString()
-        Log.d("Activity Entries Adapter", "Duration Value $durationValue")
+//        Log.d("Activity Entries Adapter", "Duration Value $durationValue")
         if(durationValue.toDouble() > 60){
             val hours = floor(durationValue.toDouble()/60)
             val minutes = durationValue.toDouble() - 60*hours
