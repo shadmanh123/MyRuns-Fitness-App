@@ -120,6 +120,7 @@ class Profile:AppCompatActivity() {
             }
             else{
                 saveProfile()
+                finish()
             }
         }
         cancelButton = findViewById(R.id.cancelButton)
