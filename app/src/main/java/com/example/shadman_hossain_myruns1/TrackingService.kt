@@ -16,7 +16,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
-import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.maps.model.LatLng
@@ -51,7 +50,6 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
     private var duration: Double? = null
     private var startTimeMillis: Long? = null
     private var currentTimeMillis: Long? = null
-    private var lastTimeMillis: Long? = null
     private var avgPace: Double? = null
     private var heartRate: Double? = null
     private var type:String? = null
@@ -66,12 +64,12 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
     private lateinit var timer: Timer
     private var exerciseEntry: ExerciseEntry? = null
     private lateinit var sensorManager: SensorManager
+    private lateinit var sensor: Sensor
     private lateinit var queue: ArrayBlockingQueue<Double>
     private val fftSize = 64
-    private val halfFFTSize = fftSize/2
-    private val classifier = WekaClassifier()
 
     companion object{
+        const val typeOfActivityCodeKey = "typeOfActivityCodeKey"
         const val startMarkerLatitudeKey = "startMarkerLatitudeKey"
         const val startMarkerLongitudeKey = "startMarkerLongitudeKey"
         const val currentMarkerLatitudeKey = "currentMarkerLatitudeKey"
@@ -96,8 +94,6 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
         locationList = ArrayList()
         timer.scheduleAtFixedRate(myTask, 0, 1000L)
         myBinder = MyBinder()
-        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-        lastTimeMillis = System.currentTimeMillis()
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         showNotification()
         queue = ArrayBlockingQueue<Double>(2048)
@@ -108,6 +104,11 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
             typeOfActivityCode = intent.getIntExtra("activityCode", -1)
             type = intent.getStringExtra("type")
             typeOfInputValue = intent.getIntExtra("inputTypeValue", -1)
+            if (typeOfInputValue == -1){
+                sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+                sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)!!
+                sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST)
+            }
         }
         return START_NOT_STICKY
     }
@@ -148,6 +149,7 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
         if(timer != null){
             timer.cancel()
         }
+        sensorManager.unregisterListener(this)
         avgSpeed = null
         currentSpeed = null
         speedList.clear()
@@ -170,7 +172,7 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event!!.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION){
+        if (event!!.sensor.type == Sensor.TYPE_ACCELEROMETER){
             var x = event.values[0].toDouble()
             var y = event.values[1].toDouble()
             var z = event.values[2].toDouble()
@@ -190,35 +192,41 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
     }
 
     private fun generateFeatureVector() {
-        if(queue.size >= fftSize){
+        if(queue.size == fftSize){
             //Perform FFT
             val fft = FFT(fftSize)
-            val data = DoubleArray(fftSize)
-            val real = DoubleArray(halfFFTSize)
-            val imag = DoubleArray(halfFFTSize)
-
-            for (i in 0 until fftSize){
-                data[i] = queue.poll()
+            val data = DoubleArray(fftSize+1)
+            val real = DoubleArray(fftSize)
+            val imag = DoubleArray(fftSize)
+            for (i in 0 until queue.size){
+                real[i] = queue.poll()
             }
-
+            var max = real[0]
+            for (value in real){
+                if (max < value){
+                    max = value
+                }
+            }
             //Apply FFT
-            fft.fft(data, DoubleArray(fftSize))
+            fft.fft(real, imag)
 
             //Prepare data for classifier
-            for (i in 0 until halfFFTSize){
-                real[i] = data[i]
-                imag[i] = data[i + halfFFTSize]
+            for (i in real.indices){
+                val magnitude = Math.sqrt(real[i]*real[i] + imag[i]*imag[i])
+                data.set(i, magnitude)
+                imag[i] = 0.0
             }
 
-            val inputArray = (real + imag).toTypedArray()
+            data.set(fftSize, max)
 
-            val result = WekaClassifier.classify(inputArray)
-            Log.d("Tracking Service", "Weka classifier result is $result")
+            val inputArray = data.toTypedArray()
+
+            typeOfActivityCode = WekaClassifier.classify(inputArray).toInt()
+//            Log.d("Tracking Service", "Weka classifier result is $activityTypeCode")
         }
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-        TODO("Not yet implemented")
     }
 
     private fun showNotification(){
@@ -258,6 +266,7 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
 
                 if(updateHandler != null){
                     val bundle = Bundle()
+                    bundle.putInt(typeOfActivityCodeKey, typeOfActivityCode)
                     bundle.putDouble(avgSpeedKey, avgSpeed!!)
                     bundle.putDouble(currentSpeedKey,currentSpeed!!)
                     bundle.putDouble(climbKey, climb!!)

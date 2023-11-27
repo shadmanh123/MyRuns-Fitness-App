@@ -1,4 +1,5 @@
 Hello,
 FFT class was directly taken from the lecture demo
-TypeConverter class inspired by ChatGPT
-Inspiration for maps and service  by prof lecture
+WekaClassifier was directly taken from the Weka Source code for J48
+Debugging of generateFeatureVector was possibly by assistance from ChatGPT
+Inspiration for sensors and determining feature was by professor's lecture

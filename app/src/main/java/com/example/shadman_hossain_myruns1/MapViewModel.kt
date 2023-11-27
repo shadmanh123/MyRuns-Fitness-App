@@ -91,6 +91,7 @@ class MapViewModel(): ViewModel(), ServiceConnection {
         override fun handleMessage(msg: Message) {
             if (msg.what == TrackingService.UPDATE_INT_VALUE) {
                 val bundle = msg.data
+                typeOfActivityCode = bundle.getInt(TrackingService.typeOfActivityCodeKey)
                 avgSpeed = bundle.getDouble(TrackingService.avgSpeedKey)
                 currentSpeed = bundle.getDouble(TrackingService.currentSpeedKey)
                 climb = bundle.getDouble(TrackingService.climbKey)
@@ -102,10 +103,55 @@ class MapViewModel(): ViewModel(), ServiceConnection {
                 currentMarkerLongitude = bundle.getDouble(TrackingService.currentMarkerLongitudeKey)
                 exerciseEntry = bundle.getParcelable(TrackingService.exerciseEntryKey)
                 type = bundle.getString(TrackingService.typeKey)
+                checkActivityType(typeOfActivityCode)
                 updateStats()
                 updateMarkers()
                 updateExerciseEntry()
             }
+        }
+    }
+    private fun checkActivityType(activityTypeCode: Int){
+        if (activityTypeCode == 0){
+            typeOfActivityName = "Runnning"
+        }
+        else if (activityTypeCode == 1){
+            typeOfActivityName = "Walking"
+        }
+        else if (activityTypeCode == 2){
+            typeOfActivityName = "Standing"
+        }
+        else if (activityTypeCode == 3){
+            typeOfActivityName = "Cycling"
+        }
+        else if (activityTypeCode == 4){
+            typeOfActivityName = "Hiking"
+        }
+        else if (activityTypeCode == 5){
+            typeOfActivityName = "Downhill Skiing"
+        }
+        else if (activityTypeCode == 6){
+            typeOfActivityName = "Cross-Country Skiing"
+        }
+        else if (activityTypeCode == 7){
+            typeOfActivityName = "Snowboarding"
+        }
+        else if (activityTypeCode == 8){
+            typeOfActivityName = "Skating"
+        }
+        else if (activityTypeCode == 9){
+            typeOfActivityName = "Swimming"
+        }
+        else if (activityTypeCode == 10){
+            typeOfActivityName = "Mountain Biking"
+        }
+        else if (activityTypeCode == 11){
+            typeOfActivityName = "Wheelchair"
+        }
+        else if (activityTypeCode == 12){
+            typeOfActivityName = "Elliptical"
+        }
+        else {
+            typeOfActivityName = "Other"
         }
     }
 }
