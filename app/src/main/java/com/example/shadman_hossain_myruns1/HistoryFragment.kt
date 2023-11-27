@@ -51,7 +51,7 @@ class HistoryFragment:Fragment() {
                 intentToDisplayEntryActivity.putExtra("entryKey", entryKey)
                 startActivity(intentToDisplayEntryActivity)
             }
-            else if (inputType == 2){
+            else{
                 intentToMapDisplayActivity = Intent(requireContext(), MapDisplayActivity::class.java)
                 intentToMapDisplayActivity.putExtra("entryKey", entryKey)
                 startActivity(intentToMapDisplayActivity)

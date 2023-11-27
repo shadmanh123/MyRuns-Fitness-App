@@ -87,7 +87,6 @@ class MyRunsDialogFragment:DialogFragment() {
         else if (dialogType == "Distance") {
             title.text = "Distance"
             userInput.hint = "Input distance information "
-//            createDistanceWidget(builder)
         }
         else if (dialogType == "Calories") {
             title.text = "Calories"

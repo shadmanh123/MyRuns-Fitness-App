@@ -25,7 +25,7 @@ class StartFragment:Fragment() {
     ):
             View {
         view = inflater.inflate(R.layout.start_fragment, container,false)
-        activityTypeSpinner = view.findViewById<Spinner>(R.id.activityTypeSpinner)
+        activityTypeSpinner = view.findViewById(R.id.activityTypeSpinner)
         inputTypeSpinner = view.findViewById(R.id.inputTypeSpinner)
         startButton = view.findViewById(R.id.startButton)
         startButton.setOnClickListener {
@@ -51,7 +51,7 @@ class StartFragment:Fragment() {
         }
         else if (inputType == "GPS") {
             activity = activityTypeSpinner.selectedItem.toString()
-            var inputTypeValue: Int = 2
+            val inputTypeValue = 2
             val activityCode = getActivityTypeCode(activity)
             if(activityCode != -1){
                 intentToMapDisplayActivity = Intent(requireContext(), MapDisplayActivity::class.java)
@@ -63,7 +63,7 @@ class StartFragment:Fragment() {
         }
 
         else{
-            var inputTypeValue: Int = 3
+            val inputTypeValue = 3
             intentToMapDisplayActivity = Intent(requireContext(),MapDisplayActivity::class.java)
             intentToMapDisplayActivity.putExtra("inputTypeCode", inputTypeValue)
             startActivity(intentToMapDisplayActivity)

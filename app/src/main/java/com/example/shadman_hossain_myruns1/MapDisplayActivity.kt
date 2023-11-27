@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -30,7 +29,6 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
     private var typeOfActivityName: String? = null
     private var typeOfInputValue = -1
     private var entryKey = -1L
-    private lateinit var locationManager: LocationManager
     private lateinit var map: GoogleMap
     private lateinit var markerOptions: MarkerOptions
     private var startMarker: Marker? = null
@@ -64,33 +62,33 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
         entryKey = intent.getLongExtra("entryKey", -1L)
         appContext = this.applicationContext
         getUnitType()
-        Utilities.checkForGPSPermission(this)
         stats = findViewById(R.id.stats)
         val mapFragment =
             supportFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
         establishExerciseDatabase()
-        mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
-
         saveOrDeleteButton = findViewById(R.id.saveButton)
         cancelButton = findViewById(R.id.cancelButton)
         buttonFunctionality()
-        backPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                println("debug: back button pressed")
-                unBindService()
-                stopService(serviceIntent)
-                isEnabled = false
-                finish()
+        if (entryKey == -1L) {
+            typeOfInputValue = intent.getIntExtra("inputTypeValue", -1)
+            Utilities.checkForGPSPermission(this)
+            mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
+            if (typeOfInputValue == 3) {
+                automaticModeActivities(savedInstanceState)
+            } else {
+                gpsModeActivities(savedInstanceState)
             }
-        }
-        onBackPressedDispatcher.addCallback(this, backPressedCallback)
-        typeOfInputValue = intent.getIntExtra("inputTypeValue", -1)
-        if (typeOfInputValue == 3) {
-            automaticModeActivities(savedInstanceState)
-        }
-        else{
-            gpsModeActivities(savedInstanceState)
+            backPressedCallback = object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    println("debug: back button pressed")
+                    unBindService()
+                    stopService(serviceIntent)
+                    isEnabled = false
+                    finish()
+                }
+            }
+            onBackPressedDispatcher.addCallback(this, backPressedCallback)
         }
     }
 
@@ -283,12 +281,11 @@ class MapDisplayActivity : AppCompatActivity(), OnMapReadyCallback{
     }
 
     private fun getUnitType(){
-        unitType = this.getSharedPreferences("Unit", AppCompatActivity.MODE_PRIVATE)
+        unitType = this.getSharedPreferences("Unit", MODE_PRIVATE)
         type = unitType.getString("unitType", "km")
     }
 
     private fun saveToExerciseDatabase(){
-//        Log.d("MapDisplayActivity", "Save exercise to db")
         exerciseViewModel.insert(exerciseEntry!!)
     }
 

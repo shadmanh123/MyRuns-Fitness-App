@@ -2,7 +2,6 @@ package com.example.shadman_hossain_myruns1
 
 import android.content.ComponentName
 import android.content.ServiceConnection
-import android.location.Location
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -11,30 +10,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
-import java.util.Calendar
 
-class MapViewModel(): ViewModel(), ServiceConnection {
-    private lateinit var location: Location
-    private var speedList: ArrayList<Double> = ArrayList()
+class MapViewModel : ViewModel(), ServiceConnection {
     private var avgSpeed: Double? = null
     private var currentSpeed: Double? = null
-    private var startAltitude: Double? = null
-    private var currentAltitude: Double? = null
     private var climb: Double? = null
     private var calories: Double? = null
-    private var met: Double? = null
     private var distance: Double? = null
-    private lateinit var dateTime: Calendar
-    private var duration: Double? = null
-    private var startTimeMillis: Long? = null
-    private var currentTimeMillis: Long? = null
-    private var avgPace: Double? = null
-    private var heartRate: Double? = null
     private var type:String? = null
-    private var startMarkerLatLng: LatLng? = null
     private var startMarkerLatitude: Double? = null
     private var startMarkerLongitude: Double? = null
-    private var currentMarkerLatLng: LatLng? = null
     private var currentMarkerLatitude: Double? = null
     private var currentMarkerLongitude: Double? = null
     private var typeOfActivityCode = -1

@@ -73,7 +73,6 @@ class ManualInputActivity:AppCompatActivity() {
             val dialogType = inputTitles[position]
             val dialogFragment = MyRunsDialogFragment.newInstance(dialogType)
             dialogFragment.show(supportFragmentManager, "MyRunsDialog")
-//            dialogFragment.setDataSavedListener(this)
         }
 
     }

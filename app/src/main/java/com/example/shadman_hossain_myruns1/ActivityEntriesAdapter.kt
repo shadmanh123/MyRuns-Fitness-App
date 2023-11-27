@@ -2,7 +2,6 @@ package com.example.shadman_hossain_myruns1
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -31,7 +30,6 @@ class ActivityEntriesAdapter(private val context: Context, private var entryList
     private lateinit var unitType: SharedPreferences
     private lateinit var unitTypeSaved: String
 
-    //    private lateinit var unitPreference: Int
     override fun getCount(): Int {
         return entryList.size
     }
@@ -59,7 +57,6 @@ class ActivityEntriesAdapter(private val context: Context, private var entryList
 
     private fun durationFormat(position: Int) {
         durationValue = entryList.get(position).duration.toString()
-//        Log.d("Activity Entries Adapter", "Duration Value $durationValue")
         if(durationValue.toDouble() > 60){
             val hours = floor(durationValue.toDouble()/60)
             val minutes = durationValue.toDouble() - 60*hours
@@ -130,7 +127,6 @@ class ActivityEntriesAdapter(private val context: Context, private var entryList
     }
     fun checkActivityType(position: Int) {
         val activityTypeCode = entryList.get(position).activityType
-        Log.d("Activity Entries Adapter", "activityTypeCode is $activityTypeCode")
         if (activityTypeCode == 0){
             activity = "Runnning"
         }

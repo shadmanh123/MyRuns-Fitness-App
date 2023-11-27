@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.maps.model.LatLng
@@ -38,8 +39,8 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
     private lateinit var locationManager: LocationManager
     private lateinit var locationList: ArrayList<LatLng>
     private var speedList: ArrayList<Double> = ArrayList()
-    private var avgSpeed: Double? = null
-    private var currentSpeed: Double? = null
+    private var avgSpeed: Double = 0.0
+    private var currentSpeed: Double = 0.0
     private var startAltitude: Double? = null
     private var currentAltitude: Double? = null
     private var climb: Double? = null
@@ -80,7 +81,6 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
         const val caloriesKey = "caloriesKey"
         const val distanceKey = "distanceKey"
         const val UPDATE_INT_VALUE = 0
-        const val STOP_TRACKING_SERVICE = "stop tracking service"
         const val NOTIFY_ID = 11
         const val CHANNEL_ID = "notification channel"
         const val exerciseEntryKey = "exerciseEntryKey"
@@ -143,15 +143,13 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
 
     private fun cleanUpTasks() {
         notificationManager.cancel(NOTIFY_ID)
-        if(locationManager != null){
-            locationManager.removeUpdates(this)
+        locationManager.removeUpdates(this)
+        timer.cancel()
+        if (typeOfInputValue == -1) {
+            sensorManager.unregisterListener(this)
         }
-        if(timer != null){
-            timer.cancel()
-        }
-        sensorManager.unregisterListener(this)
-        avgSpeed = null
-        currentSpeed = null
+        avgSpeed = 0.0
+        currentSpeed = 0.0
         speedList.clear()
         startAltitude = null
         currentAltitude = null
@@ -222,7 +220,6 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
             val inputArray = data.toTypedArray()
 
             typeOfActivityCode = WekaClassifier.classify(inputArray).toInt()
-//            Log.d("Tracking Service", "Weka classifier result is $activityTypeCode")
         }
     }
 
@@ -285,7 +282,6 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
                 }
             } catch (t: Throwable) {
                 println("debug: Timer Tick Failed. $t")
-//                stopSelf()
             }
         }
     }
@@ -330,6 +326,7 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
         getMarkers(location)
         getSpeedAndAddtoList(location)
         calculateAvgSpeed()
+        Log.d("Tracking Service", "current speed is $currentSpeed")
         getClimb(location)
         getDistance()
         getCalories()
@@ -441,9 +438,7 @@ class TrackingService: android.app.Service(), LocationListener, SensorEventListe
     }
     private fun getDateTime() {
         val dateCalendar = Calendar.getInstance()
-//        dateCalendar.timeInMillis = date!!
         val timeCalendar = Calendar.getInstance()
-//        timeCalendar.timeInMillis = time!!
         val year = dateCalendar.get(Calendar.YEAR)
         val month = dateCalendar.get(Calendar.MONTH)
         val day = dateCalendar.get(Calendar.DAY_OF_MONTH)
